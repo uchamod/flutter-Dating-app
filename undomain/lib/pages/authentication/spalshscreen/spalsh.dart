@@ -23,6 +23,7 @@ class _SpalshScreenState extends State<SpalshScreen> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       body: Center(
         child: Column(

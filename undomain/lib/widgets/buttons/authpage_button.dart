@@ -17,8 +17,9 @@ class AuthpageButton extends StatelessWidget {
         GoRouter.of(context).goNamed(path);
       },
       child: Container(
-        child: Text(text, style: textTitle),
-        padding: EdgeInsets.symmetric(vertical: 15),
+        width: double.infinity,
+        height: MediaQuery.of(context).size.height * 0.07,
+        child: Center(child: Text(text, style: textTitle)),
 
         decoration: BoxDecoration(
           color: utilPrimaryRed,

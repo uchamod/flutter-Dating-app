@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:undomain/router/router_names.dart';
+import 'package:undomain/util/colors/colors.dart';
 import 'package:undomain/util/global/global_varibles.dart';
 import 'package:undomain/util/textstyles/text_styles.dart';
 import 'package:undomain/widgets/buttons/authpage_button.dart';
@@ -38,12 +39,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
         child: Column(
           children: [
+            SizedBox(height: MediaQuery.of(context).size.height * 0.08),
             //title
             Text("Date NET.", style: textDisplay),
             //auth details
             Form(
               child: Column(
                 children: [
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+                  CircleAvatar(backgroundColor: utilPrimaryGrey, radius: 64),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.02),
                   //username
                   AuthtextBox(
                     controller: _usernamecontroller,
@@ -53,6 +58,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     textInputAction: TextInputAction.next,
                     textInputType: TextInputType.name,
                   ),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.02),
                   //email
                   AuthtextBox(
                     controller: _passwordcontroller,
@@ -62,6 +68,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     textInputAction: TextInputAction.next,
                     textInputType: TextInputType.emailAddress,
                   ),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.02),
                   //password
                   AuthtextBox(
                     controller: _confirmpasswordcontroller,
@@ -71,6 +78,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     textInputAction: TextInputAction.next,
                     textInputType: TextInputType.visiblePassword,
                   ),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.02),
                   //password
                   AuthtextBox(
                     controller: _emailcontroller,
@@ -80,6 +88,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     textInputAction: TextInputAction.done,
                     textInputType: TextInputType.visiblePassword,
                   ),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.08),
                   //to verification page
                   AuthpageButton(
                     text: "Register",

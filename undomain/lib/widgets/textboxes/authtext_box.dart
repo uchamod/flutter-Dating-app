@@ -32,7 +32,10 @@ class AuthtextBox extends StatelessWidget {
         hintText: hint,
         hintStyle: textHint,
 
-        contentPadding: EdgeInsets.symmetric(vertical: 10),
+        contentPadding: EdgeInsets.symmetric(
+          vertical: MediaQuery.of(context).size.height * 0.02,
+          horizontal: 10,
+        ),
         border: formFieldBorder(utilPrimaryGrey),
         focusedBorder: formFieldBorder(utilPrimaryGrey),
         errorBorder: formFieldBorder(utilPrimaryRed),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:undomain/router/go_router.dart';
 
 void main() {
   runApp(const MyApp());
@@ -9,10 +10,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       theme: ThemeData.light(useMaterial3: true),
+      debugShowCheckedModeBanner: false,
       title: "Date Net",
-      home: Scaffold(),
+      routerConfig: Routes().goRouter,
     );
   }
 }

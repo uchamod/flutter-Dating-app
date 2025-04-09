@@ -21,7 +21,7 @@ class _EmailVerificationState extends State<EmailVerification> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    startTimer();
     super.initState();
   }
 
@@ -51,9 +51,10 @@ class _EmailVerificationState extends State<EmailVerification> {
 
   @override
   Widget build(BuildContext context) {
+    double pinputSize = MediaQuery.of(context).size.width;
     final defaultPinTheme = PinTheme(
-      width: 56,
-      height: 56,
+      width: (pinputSize - 0.08) / 5,
+      height: (pinputSize - 0.08) / 5,
       textStyle: TextStyle(fontSize: 20, color: Colors.black),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey),
@@ -67,32 +68,50 @@ class _EmailVerificationState extends State<EmailVerification> {
           vertical: authScreenPaddingV,
         ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
+            //SizedBox(height: MediaQuery.of(context).size.height * 0.01),
             //title
             Text("Date NET.", style: textDisplay),
-            Text("Enter verification code ", style: textTitalSmall),
-            Text("check out given @email", style: textLabel),
-
-            //pinputs
-            Pinput(
-              length: 4,
-              keyboardType: TextInputType.number,
-              onCompleted: _onSubmit,
-              defaultPinTheme: defaultPinTheme,
+            Column(
+              children: [
+                Text("Enter verification code ", style: textTitalSmall),
+                Text("check out given @email", style: textLabel),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+                //pinputs
+                Pinput(
+                  length: 5,
+                  keyboardType: TextInputType.number,
+                  onCompleted: _onSubmit,
+                  defaultPinTheme: defaultPinTheme,
+                ),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+                //time render
+                _start > 0
+                    ? RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(text: "Resend code ", style: textLabel),
+                          TextSpan(text: "${_start}s", style: textLabelRed),
+                        ],
+                      ),
+                    )
+                    : Text("Resend", style: textLabel),
+              ],
             ),
-            //time render
-            Text(
-              _start > 0 ? "Resend code ${_start}s" : "Resend",
-              style: textLabel,
-            ),
-            //verify button:to home page
-            AuthpageButton(path: RouterNames.homePage, text: "Verify"),
-            //to login page
-            TextButton(
-              onPressed: () {
-                GoRouter.of(context).goNamed(RouterNames.loginPage);
-              },
-              child: Text("Login", style: textLabelRed),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.08),
+            Column(
+              children: [
+                //verify button:to home page
+                AuthpageButton(path: RouterNames.homePage, text: "Verify"),
+                //to login page
+                TextButton(
+                  onPressed: () {
+                    GoRouter.of(context).goNamed(RouterNames.loginPage);
+                  },
+                  child: Text("Login", style: textLabelRed),
+                ),
+              ],
             ),
           ],
         ),

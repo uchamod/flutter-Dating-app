@@ -10,6 +10,8 @@ class TermsAndConditions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final deviceWidth = MediaQuery.of(context).size.width;
+    final deviceHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.symmetric(
@@ -17,28 +19,39 @@ class TermsAndConditions extends StatelessWidget {
           vertical: authScreenPaddingV,
         ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            //title
-            Text("Date NET.", style: textDisplay),
-            //termes and conditions
-            Text(
-              "Forem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dictum est a, mattis tellus. Sed dignissim, metus nec fringilla accumsan, risus sem sollicitudin lacus, ut interdum tellus elit sed risus. Maecenas eget condimentum velit, sit amet feugiat lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Praesent auctor purus luctus enim egestas, ac scelerisque ante pulvinar. Donec ut rhoncus ex. Suspendisse ac rhoncus nisl, eu tempor urna. Curabitur vel bibendum lorem. Morbi convallis convallis diam sit amet lacinia. Aliquam in elementum tellus.Forem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dictum est a, mattis tellus. Sed dignissim, metus nec fringilla accumsan, risus sem sollicitudin lacus, ut interdum tellus elit sed risus. Maecenas eget condimentum velit, sit amet feugiat lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Praesent auctor purus luctus enim egestas, ac scelerisque ante pulvinar. Donec ut rhoncus ex",
-              style: textBody,
+            // SizedBox(height: deviceHeight),
+            Column(
+              children: [
+                //title
+                Text("Date NET.", style: textDisplay),
+                //termes and conditions
+                Text(
+                  "Forem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dictum est a, mattis tellus. Sed dignissim, metus nec fringilla accumsan, risus sem sollicitudin lacus, ut interdum tellus elit sed risus. Maecenas eget condimentum velit, sit amet feugiat lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Praesent auctor purus luctus enim egestas, ac scelerisque ante pulvinar. Donec ut rhoncus ex. Suspendisse ac rhoncus nisl, eu tempor urna. Curabitur vel bibendum lorem. Morbi convallis convallis diam sit amet lacinia. Aliquam in elementum tellus.Forem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dictum est a, mattis tellus. Sed dignissim, metus nec fringilla accumsan, risus sem sollicitudin lacus, ut interdum tellus elit sed risus. Maecenas eget condimentum velit, sit amet feugiat lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Praesent auctor purus luctus enim egestas, ac scelerisque ante pulvinar. Donec ut rhoncus ex",
+                  style: textBody,
+                ),
+              ],
             ),
 
             //accept box
-            Row(
+            Column(
               children: [
-                Checkbox(
-                  value: false,
-                  onChanged: (value) {},
-                  checkColor: utilPrimaryRed,
-                  autofocus: true,
-                  focusColor: utilPrimaryRed,
-                  side: BorderSide(color: utilPrimaryBlack, width: 1),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: false,
+                      onChanged: (value) {},
+                      checkColor: utilPrimaryRed,
+                      autofocus: true,
+                      focusColor: utilPrimaryRed,
+                      side: BorderSide(color: utilPrimaryBlack, width: 1),
+                    ),
+                    Text("I agree terms & conditions", style: textLabel),
+
+                    //go to login page
+                  ],
                 ),
-                Text("I agree terms & conditions", style: textLabel),
-                //go to login page
                 AuthpageButton(path: RouterNames.loginPage, text: "Continue"),
               ],
             ),

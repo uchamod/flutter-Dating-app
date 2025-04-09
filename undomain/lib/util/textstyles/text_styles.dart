@@ -5,7 +5,7 @@ import 'package:undomain/util/colors/colors.dart';
 
 final textTitle = GoogleFonts.poppins(
   color: utilPrimaryWhite,
-  fontSize: 24,
+  fontSize: 22,
   fontWeight: FontWeight.bold,
 );
 final textDisplay = GoogleFonts.poppins(

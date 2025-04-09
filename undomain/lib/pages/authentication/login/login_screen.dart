@@ -27,50 +27,66 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: authScreenPaddingH,
-          vertical: authScreenPaddingV,
-        ),
-        child: Column(
-          children: [
-            //title
-            Text("Date NET.", style: textDisplay),
-            //auth details
-            Form(
-              child: Column(
-                children: [
-                  //username
-                  AuthtextBox(
-                    controller: _usernamecontroller,
-                    hint: "@username",
-                    isShow: false,
-                    onSubmit: (p0) {},
-                    textInputAction: TextInputAction.next,
-                    textInputType: TextInputType.name,
-                  ),
-                  //password
-                  AuthtextBox(
-                    controller: _passwordcontroller,
-                    hint: "@password",
-                    isShow: false,
-                    onSubmit: (p0) {},
-                    textInputAction: TextInputAction.done,
-                    textInputType: TextInputType.visiblePassword,
-                  ),
-                  //to home page
-                  AuthpageButton(text: "Login", path: RouterNames.homePage),
-                  //to register page
-                  TextButton(
-                    onPressed: () {
-                      GoRouter.of(context).goNamed(RouterNames.registerPage);
-                    },
-                    child: Text("Create one", style: textLabelRed),
-                  ),
-                ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: authScreenPaddingH,
+            vertical: authScreenPaddingV,
+          ),
+          child: Column(
+            children: [
+              SizedBox(height: MediaQuery.of(context).size.height * 0.08),
+              //title
+              Column(children: [Text("Date NET.", style: textDisplay)]),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.15),
+              //auth details
+              Form(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    AuthtextBox(
+                      controller: _usernamecontroller,
+                      hint: "@username",
+                      isShow: false,
+                      onSubmit: (p0) {},
+                      textInputAction: TextInputAction.next,
+                      textInputType: TextInputType.name,
+                    ),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+                    //password
+                    AuthtextBox(
+                      controller: _passwordcontroller,
+                      hint: "@password",
+                      isShow: false,
+                      onSubmit: (p0) {},
+                      textInputAction: TextInputAction.done,
+                      textInputType: TextInputType.visiblePassword,
+                    ),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.3),
+                    Column(
+                      children: [
+                        AuthpageButton(
+                          text: "Login",
+                          path: RouterNames.homePage,
+                        ),
+                        //to register page
+                        TextButton(
+                          onPressed: () {
+                            GoRouter.of(
+                              context,
+                            ).goNamed(RouterNames.registerPage);
+                          },
+                          child: Text("Create one", style: textLabelRed),
+                        ),
+                      ],
+                    ),
+
+                    //to home page
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
