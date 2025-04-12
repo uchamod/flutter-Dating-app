@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:undomain/router/router_names.dart';
 import 'package:undomain/util/colors/colors.dart';
 import 'package:undomain/util/global/global_varibles.dart';
 import 'package:undomain/util/textstyles/text_styles.dart';
 import 'package:undomain/widgets/buttons/authpage_button.dart';
 
-class TermsAndConditions extends StatelessWidget {
+class TermsAndConditions extends StatefulWidget {
   const TermsAndConditions({super.key});
 
   @override
+  State<TermsAndConditions> createState() => _TermsAndConditionsState();
+}
+
+class _TermsAndConditionsState extends State<TermsAndConditions> {
+  @override
+  bool isChecked = false;
   Widget build(BuildContext context) {
     final deviceWidth = MediaQuery.of(context).size.width;
     final deviceHeight = MediaQuery.of(context).size.height;
@@ -39,20 +46,46 @@ class TermsAndConditions extends StatelessWidget {
               children: [
                 Row(
                   children: [
+                    //acceptent check box
                     Checkbox(
-                      value: false,
-                      onChanged: (value) {},
-                      checkColor: utilPrimaryRed,
+                      value: isChecked,
+                      activeColor: utilPrimaryRed,
+                      onChanged: (value) {
+                        setState(() {
+                          isChecked = !isChecked;
+                        });
+                      },
+                      checkColor: utilPrimaryWhite,
                       autofocus: true,
                       focusColor: utilPrimaryRed,
                       side: BorderSide(color: utilPrimaryBlack, width: 1),
                     ),
                     Text("I agree terms & conditions", style: textLabel),
-
-                    //go to login page
                   ],
                 ),
-                AuthpageButton(path: RouterNames.loginPage, text: "Continue"),
+                //route to login page
+                GestureDetector(
+                  onTap: () {
+                    isChecked
+                        ? GoRouter.of(context).goNamed(RouterNames.loginPage)
+                        : ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: utilPrimaryRed,
+                            closeIconColor: utilPrimaryWhite,
+                            elevation: 1,
+                            showCloseIcon: true,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: authScreenPaddingH,
+                            ),
+                            content: Text(
+                              "Please accept terms & conditions",
+                              style: textSnackbar,
+                            ),
+                          ),
+                        );
+                  },
+                  child: AuthpageButton(text: "Continue",isLoading: false,),
+                ),
               ],
             ),
           ],

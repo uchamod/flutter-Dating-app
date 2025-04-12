@@ -1,8 +1,12 @@
 import 'dart:async';
 
+import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:undomain/pages/authentication/terms&conditions/terms_and_conditions.dart';
 import 'package:undomain/router/router_names.dart';
+import 'package:undomain/util/colors/colors.dart';
 import 'package:undomain/util/textstyles/text_styles.dart';
 
 class SpalshScreen extends StatefulWidget {
@@ -21,24 +25,19 @@ class _SpalshScreenState extends State<SpalshScreen> {
     });
   }
 
+  dynamic get splash => null;
   @override
   Widget build(BuildContext context) {
-    
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("Date NET.", style: textDisplay),
-            SizedBox(height: 20),
+    return AnimatedSplashScreen(
+      splash: Text("Date NET.", style: textDisplay),
+      nextScreen: TermsAndConditions(),
+      // animationDuration: Duration(seconds: 3000),
+      backgroundColor: utilPrimaryWhite,
+      centered: true,
+      splashTransition: SplashTransition.fadeTransition,
+      pageTransitionType: PageTransitionType.fade,
 
-            SizedBox(height: 10),
-            CircularProgressIndicator(
-              color: Colors.blue,
-            ), // optional loading spinner
-          ],
-        ),
-      ),
+      duration: 3000,
     );
   }
 }

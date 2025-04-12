@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:undomain/router/router_names.dart';
@@ -11,47 +8,47 @@ import 'package:undomain/util/textstyles/text_styles.dart';
 import 'package:undomain/widgets/buttons/authpage_button.dart';
 import 'package:undomain/widgets/textboxes/authtext_box.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class FogotPassword extends StatefulWidget {
+  const FogotPassword({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<FogotPassword> createState() => _FogotPasswordState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _usernamecontroller = TextEditingController();
+class _FogotPasswordState extends State<FogotPassword> {
+  final TextEditingController _confirmpasswordcontroller =
+      TextEditingController();
   final TextEditingController _passwordcontroller = TextEditingController();
+  final TextEditingController _emailcontroller = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
-  final GlobalFunction _globalFunction = GlobalFunction();
   final Authservices _authservices = Authservices();
-  @override
-  void dispose() {
-    _passwordcontroller.dispose();
-    _usernamecontroller.dispose();
-    super.dispose();
-  }
+  final GlobalFunction _globalFunction = GlobalFunction();
+  //regexp for password
+  final RegExp passwordRegExp = RegExp(
+    r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{6,}$',
+  );
+  String confirmpasswordHint = "@confirm password";
+  bool isconfirmpasswordValid = true;
+  String passwordHint = "@password";
+  String emailHint = "@email";
+  bool isPasswordValid = true;
 
-  Future<void> _userLogin() async {
+  Future<void> _getCodeForResetPassword() async {
     setState(() {
       _isLoading = true;
     });
 
-    final response = await _authservices.login(
-      username: _usernamecontroller.text,
-      password: _passwordcontroller.text,
+    final response = await _authservices.sendPasswordResetRequest(
+      email: _emailcontroller.text,
     );
     if (response["success"]) {
-      String base64String = response["user"]["profileUrl"];
-      Uint8List imagesBytes = base64Decode(base64String);
-      //MemoryImage(bytes)
       GoRouter.of(context).goNamed(
-        RouterNames.homePage,
+        RouterNames.verificationPage,
         extra: {
-          "userId": response["user"]["id"],
-          "username": response["user"]["username"],
-          "email": response["user"]["email"],
-          "profileUrl": imagesBytes,
+          "userId": _passwordcontroller.text,
+          "isFromRegister": false,
+          "email": response["user"]["id"],
         },
       );
     } else {
@@ -62,11 +59,6 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  //login validation frontend properties
-  String usernameHint = "@username";
-  bool isUsernameValid = true;
-  String passwordHint = "@password";
-  bool isPasswordValid = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,10 +81,22 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    //password
                     AuthtextBox(
-                      isValid: isUsernameValid,
-                      controller: _usernamecontroller,
-                      hint: usernameHint,
+                      isValid: isPasswordValid,
+                      controller: _emailcontroller,
+                      hint: emailHint,
+                      isShow: false,
+                      onSubmit: (p0) {},
+                      textInputAction: TextInputAction.next,
+                      textInputType: TextInputType.emailAddress,
+
+                      validChecker: (value) => null,
+                    ),
+                    AuthtextBox(
+                      isValid: isPasswordValid,
+                      controller: _passwordcontroller,
+                      hint: passwordHint,
                       isShow: false,
                       onSubmit: (p0) {},
                       textInputAction: TextInputAction.next,
@@ -101,48 +105,57 @@ class _LoginScreenState extends State<LoginScreen> {
                       validChecker: (value) => null,
                     ),
                     SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-                    //password
+                    //confirm password
                     AuthtextBox(
-                      controller: _passwordcontroller,
-                      isValid: isPasswordValid,
-                      hint: passwordHint,
+                      controller: _confirmpasswordcontroller,
+                      isValid: isconfirmpasswordValid,
+                      hint: confirmpasswordHint,
                       isShow: false,
                       onSubmit: (p0) {},
                       textInputAction: TextInputAction.done,
                       textInputType: TextInputType.visiblePassword,
                       validChecker: (value) => null,
                     ),
-                    SizedBox(height: MediaQuery.of(context).size.height * 0.01),
-                    TextButton(
-                      onPressed: () {
-                        GoRouter.of(
-                          context,
-                        ).goNamed(RouterNames.fogotpasswordScreen);
-                      },
-                      child: Text("Fogot Password ?", style: textLabelRed),
-                    ),
+
                     SizedBox(height: MediaQuery.of(context).size.height * 0.25),
                     Column(
                       children: [
                         //if valid form state
                         GestureDetector(
-                          onTap: () async {
-                            if (_formKey.currentState!.validate() &&
-                                _usernamecontroller.text.isNotEmpty &&
-                                _passwordcontroller.text.isNotEmpty) {
-                              await _userLogin();
-                            } else {
+                          onTap: () {
+                            if (_confirmpasswordcontroller.text.isEmpty &&
+                                _passwordcontroller.text.isEmpty) {
                               setState(() {
                                 isPasswordValid = false;
                                 passwordHint = "please enter your @password";
-                                isUsernameValid = false;
-                                usernameHint = "please enter your @username";
+                                isconfirmpasswordValid = false;
+                                confirmpasswordHint =
+                                    "please confirm your password";
                               });
+                            } else if (!passwordRegExp.hasMatch(
+                              _passwordcontroller.text,
+                            )) {
+                              setState(() {
+                                passwordHint = "weak password";
+                                _passwordcontroller.clear();
+                              });
+                            } else if (_passwordcontroller.text !=
+                                _confirmpasswordcontroller.text) {
+                              setState(() {
+                                confirmpasswordHint =
+                                    "password mismatching please check your password";
+                                _confirmpasswordcontroller.clear();
+                              });
+                            } else {
+                              GoRouter.of(
+                                context,
+                              ).goNamed(RouterNames.loginPage);
                             }
                           },
+
                           child: AuthpageButton(
-                            text: "Login",
-                            isLoading: _isLoading,
+                            text: "Submit",
+                            isLoading: false,
                           ),
                         ),
                         //to register page
@@ -152,7 +165,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               context,
                             ).goNamed(RouterNames.registerPage);
                           },
-                          child: Text("Create one", style: textLabelRed),
+                          child: Text(
+                            "Create new account",
+                            style: textLabelRed,
+                          ),
                         ),
                       ],
                     ),

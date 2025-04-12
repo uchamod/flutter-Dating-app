@@ -5,4 +5,5 @@ class RouterNames {
   static const String homePage = "home";
   static const String termsAndConditions = "/terms";
   static const String splashScreen = "/";
+  static const String fogotpasswordScreen = "/fogotpassword";
 }
