@@ -52,6 +52,7 @@ class _TermsAndConditionsState extends State<TermsAndConditions> {
                       activeColor: utilPrimaryRed,
                       onChanged: (value) {
                         setState(() {
+                          isInitialUser = true;
                           isChecked = !isChecked;
                         });
                       },
@@ -84,7 +85,7 @@ class _TermsAndConditionsState extends State<TermsAndConditions> {
                           ),
                         );
                   },
-                  child: AuthpageButton(text: "Continue",isLoading: false,),
+                  child: AuthpageButton(text: "Continue", isLoading: false),
                 ),
               ],
             ),

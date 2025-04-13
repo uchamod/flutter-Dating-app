@@ -93,6 +93,7 @@ class _FogotPasswordState extends State<FogotPassword> {
 
                       validChecker: (value) => null,
                     ),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.02),
                     AuthtextBox(
                       isValid: isPasswordValid,
                       controller: _passwordcontroller,
@@ -122,7 +123,7 @@ class _FogotPasswordState extends State<FogotPassword> {
                       children: [
                         //if valid form state
                         GestureDetector(
-                          onTap: () {
+                          onTap: () async {
                             if (_confirmpasswordcontroller.text.isEmpty &&
                                 _passwordcontroller.text.isEmpty) {
                               setState(() {
@@ -147,9 +148,7 @@ class _FogotPasswordState extends State<FogotPassword> {
                                 _confirmpasswordcontroller.clear();
                               });
                             } else {
-                              GoRouter.of(
-                                context,
-                              ).goNamed(RouterNames.loginPage);
+                              await _getCodeForResetPassword();
                             }
                           },
 

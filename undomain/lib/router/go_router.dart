@@ -95,6 +95,13 @@ class Routes {
           return FogotPassword();
         },
       ),
+      GoRoute(
+        path: "/wrapper",
+        name: RouterNames.wrapperScreen,
+        builder: (context, state) {
+          return WrapperScreen();
+        },
+      ),
     ],
   );
 }

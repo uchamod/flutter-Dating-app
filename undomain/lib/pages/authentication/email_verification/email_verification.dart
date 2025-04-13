@@ -104,11 +104,11 @@ class _EmailVerificationState extends State<EmailVerification> {
       } else {
         _globalFunction.snackBarMassage(context, response["massage"], 3);
       }
-
-      setState(() {
-        _isLoading = true;
-      });
     }
+    setState(() {
+      _isLoading = false;
+      _pincontroller.clear();
+    });
   }
 
   @override

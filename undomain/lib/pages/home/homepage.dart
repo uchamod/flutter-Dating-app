@@ -5,16 +5,17 @@ import 'package:undomain/util/global/global_varibles.dart';
 import 'package:undomain/util/textstyles/text_styles.dart';
 
 class Homepage extends StatefulWidget {
-  final String userId;
-  final String username;
-  final String email;
-  final Uint8List prfileUrl;
+  final String? userId;
+  final String? username;
+  final String? email;
+  final Uint8List? prfileUrl;
   const Homepage({
     super.key,
-    required this.userId,
-    required this.username,
-    required this.email,
-    required this.prfileUrl,
+
+    this.userId,
+    this.username,
+    this.email,
+    this.prfileUrl,
   });
 
   @override
@@ -22,6 +23,19 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
+  late String id;
+  late String name;
+  late String email;
+
+  @override
+  void initState() {
+    id = widget.userId ?? "";
+    name = widget.username ?? "";
+    email = widget.email ?? "";
+
+    super.initState();
+  }
+
   //Uint8List imageBytes = base64Decode()
   @override
   Widget build(BuildContext context) {
@@ -34,12 +48,15 @@ class _HomepageState extends State<Homepage> {
         child: Column(
           children: [
             Text("Welcome to Homepage"),
-            Text(widget.userId, style: textBody),
-            Text(widget.username, style: textBody),
-            Text(widget.email, style: textBody),
+            Text(id, style: textBody),
+            Text(name, style: textBody),
+            Text(email, style: textBody),
             CircleAvatar(
               radius: 64,
-              backgroundImage: MemoryImage(widget.prfileUrl),
+              backgroundImage:
+                  widget.prfileUrl != null
+                      ? MemoryImage(widget.prfileUrl!)
+                      : AssetImage("assets/pic.jpg"),
             ),
           ],
         ),
