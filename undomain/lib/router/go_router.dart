@@ -1,7 +1,5 @@
 //page routes
 
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:undomain/pages/authentication/email_verification/email_verification.dart';
@@ -11,7 +9,7 @@ import 'package:undomain/pages/authentication/register/register_screen.dart';
 import 'package:undomain/pages/authentication/spalshscreen/spalsh.dart';
 import 'package:undomain/pages/authentication/terms&conditions/terms_and_conditions.dart';
 import 'package:undomain/pages/error/error_page.dart';
-import 'package:undomain/pages/home/homepage.dart';
+import 'package:undomain/pages/home/main_screen.dart';
 import 'package:undomain/router/router_names.dart';
 
 class Routes {
@@ -74,16 +72,16 @@ class Routes {
         path: "/home",
         name: RouterNames.homePage,
         builder: (context, state) {
-          String userId = (state.extra as Map<String, dynamic>)["userId"];
-          String username = (state.extra as Map<String, dynamic>)["username"];
-          String email = (state.extra as Map<String, dynamic>)["email"];
-          Uint8List profileUrl =
-              (state.extra as Map<String, dynamic>)["profileUrl"];
+          // String userId = (state.extra as Map<String, dynamic>)["userId"];
+          // String username = (state.extra as Map<String, dynamic>)["username"];
+          // String email = (state.extra as Map<String, dynamic>)["email"];
+          // Uint8List profileUrl =
+          //     (state.extra as Map<String, dynamic>)["profileUrl"];
           return Homepage(
-            email: email,
-            prfileUrl: profileUrl,
-            userId: userId,
-            username: username,
+            // email: email,
+            // prfileUrl: profileUrl,
+            // userId: userId,
+            // username: username,
           );
         },
       ),
@@ -102,6 +100,14 @@ class Routes {
           return WrapperScreen();
         },
       ),
+      //main screen
+      // GoRoute(
+      //   path: "/main",
+      //   name: RouterNames.mainScreen,
+      //   builder: (context, state) {
+      //     return Homepage();
+      //   },
+      // ),
     ],
   );
 }

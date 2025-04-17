@@ -6,7 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:undomain/pages/authentication/login/login_screen.dart';
-import 'package:undomain/pages/home/homepage.dart';
+import 'package:undomain/pages/authentication/terms&conditions/terms_and_conditions.dart';
+import 'package:undomain/pages/home/main_screen.dart';
 import 'package:undomain/router/router_names.dart';
 import 'package:undomain/util/colors/colors.dart';
 import 'package:undomain/util/textstyles/text_styles.dart';
@@ -54,7 +55,8 @@ class WrapperScreen extends StatefulWidget {
 
 class _WrapperScreenState extends State<WrapperScreen> {
   bool isLoged = false;
-
+  bool isInitUser = false;
+  String? userId;
   @override
   void initState() {
     _checkLoginState();
@@ -64,14 +66,19 @@ class _WrapperScreenState extends State<WrapperScreen> {
   void _checkLoginState() async {
     SharedPreferences _pref = await SharedPreferences.getInstance();
     String? token = _pref.getString("token");
-
+    userId = _pref.getString("user");
     setState(() {
       isLoged = token != null;
+      isInitUser = userId == null;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return isLoged ? Homepage() : LoginScreen();
+    return isInitUser
+        ? TermsAndConditions()
+        : isLoged
+        ? Homepage()
+        : LoginScreen();
   }
 }

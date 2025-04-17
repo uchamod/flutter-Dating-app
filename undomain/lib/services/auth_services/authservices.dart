@@ -5,7 +5,7 @@ import "package:http/http.dart" as http;
 import "package:shared_preferences/shared_preferences.dart";
 
 class Authservices {
-  final baseUrl = "http://192.168.28.148:5000/api/auth";
+  final baseUrl = "http://192.168.12.148:5000/api/auth";
   //register new user
   Future<Map<String, dynamic>> register(
     File profileUrl, {
@@ -38,7 +38,10 @@ class Authservices {
       //store tooken in shared preferences
       final SharedPreferences preferences =
           await SharedPreferences.getInstance();
+      //set jwt token
       preferences.setString("token", user["newToken"]);
+      //set user id
+      preferences.setString("user", user["user"]["id"]);
       print(user["newToken"]);
       return user;
     } catch (err) {
@@ -90,7 +93,10 @@ class Authservices {
       //store tooken in shared preferences
       final SharedPreferences preferences =
           await SharedPreferences.getInstance();
-      preferences.setString("token", user["newToken"]);
+      //save jwt
+      await preferences.setString("token", user["newToken"]);
+      //save user id
+      await preferences.setString("user", user["user"]["id"]);
       print(user["newToken"]);
       return user;
     } catch (err) {
