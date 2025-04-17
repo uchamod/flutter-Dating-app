@@ -2,6 +2,7 @@ import "dart:convert";
 
 import "package:http/http.dart" as http;
 import "package:shared_preferences/shared_preferences.dart";
+import "package:undomain/models/user/user_model.dart";
 
 class Userservices {
   final baseUrl = "http://192.168.12.148:5000/api/user";
@@ -31,13 +32,15 @@ class Userservices {
         headers: {'Content-Type': 'application/json', 'Authorization': token},
       );
       final user = jsonDecode(response.body);
+
       print(user);
+
       if (response.statusCode == 401) {
         print("user getting error $user");
         return user;
       }
-
-      return user;
+      UserModel currentUser = UserModel.fromJson(user["user"]);
+      return {"success": true, "user": currentUser};
     } catch (err) {
       print("client side error $err");
       return {"success": false, "massage": "Unexpected error"};
@@ -45,13 +48,11 @@ class Userservices {
   }
 
   //get all user details(avalible working)
-  Future<List<Map<String, dynamic>>?> getAllUser() async {
+  Future<Map<String, dynamic>> getAllUser() async {
     try {
       final token = await getToken();
       if (token == null) {
-        return [
-          {"success": false, "massage": "Authenticated token not found"},
-        ];
+        return {"success": false, "massage": "Authenticated token not found"};
       }
       final response = await http.get(
         Uri.parse("$baseUrl/getalluser"),
@@ -59,28 +60,27 @@ class Userservices {
         headers: {'Content-Type': 'application/json', 'Authorization': token},
       );
 
-      final allUsers = jsonDecode(response.body);
-      if (response.statusCode == 500) {
-        return [allUsers];
-      }
+      Map<String, dynamic> allUsersMap = jsonDecode(response.body);
 
-      return allUsers["users"];
+      if (response.statusCode == 500) {
+        return allUsersMap;
+      }
+      List<dynamic> users = allUsersMap["users"];
+      List<UserModel> allUsers =
+          users.map((item) => UserModel.fromJson(item)).toList();
+      return {"success": true, "users": allUsers};
     } catch (err) {
       print("client side error $err");
-      return [
-        {"success": false, "massage": "Unexpected error"},
-      ];
+      return {"success": false, "massage": "Unexpected error"};
     }
   }
 
   //get user by usernname
-  Future<List<Map<String, dynamic>>?> getUserByUserName(String username) async {
+  Future<Map<String, dynamic>> getUserByUserName(String username) async {
     try {
       final token = await getToken();
       if (token == null) {
-        return [
-          {"success": false, "massage": "Authenticated token not found"},
-        ];
+        return {"success": false, "massage": "Authenticated token not found"};
       }
       final response = await http.get(
         Uri.parse("$baseUrl/getuserbyusername/$username"),
@@ -90,19 +90,20 @@ class Userservices {
           'Authorization': 'Bearer $token',
         },
       );
-      final user = jsonDecode(response.body);
+      final users = jsonDecode(response.body);
       if (response.statusCode == 404 || response.statusCode == 500) {
-        return [user];
+        return users;
       }
-      if (user["users"].length > 1) {
-        return user["users"];
-      }
-      return user["users"].toList();
+
+      List<UserModel> fetchedUsers =
+          users.map((user) => UserModel.fromJson(user)).toList();
+      // if (users["users"].length > 1) {
+      //   return users["users"];
+      // }
+      return {"success": false, users: fetchedUsers};
     } catch (err) {
       print("client side error $err");
-      return [
-        {"success": false, "massage": "Unexpected error"},
-      ];
+      return {"success": false, "massage": "Unexpected error"};
     }
   }
 }
