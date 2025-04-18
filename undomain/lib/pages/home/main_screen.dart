@@ -9,13 +9,13 @@ import 'package:undomain/util/colors/colors.dart';
 import 'package:undomain/util/textstyles/text_styles.dart';
 
 class Homepage extends StatefulWidget {
-  // final String userId;
+  final bool isFromLogin;
   // final String? username;
   // final String? email;
   // final Uint8List? prfileUrl;
   const Homepage({
     super.key,
-    // required this.userId,
+    required this.isFromLogin,
 
     // this.userId,
     // this.username,
@@ -32,13 +32,19 @@ class _HomepageState extends State<Homepage> {
   //renderd screens
   List<Widget> _buildScreen() {
     return [
-      HomeScreen(),
+      HomeScreen(isRestart: widget.isFromLogin),
       ReelScreen(),
       StreamingScreen(),
       UpdateScreen(),
       ProfileScren(),
     ];
   }
+
+  // void _restart() {
+  //   if (widget.isFromLogin) {
+  //     setState(() {});
+  //   }
+  // }
 
   //nav bar items
   List<PersistentBottomNavBarItem> _navBarItems() {
@@ -81,6 +87,7 @@ class _HomepageState extends State<Homepage> {
   @override
   void initState() {
     _tabController = PersistentTabController(initialIndex: 0);
+    //_restart();
     super.initState();
   }
 

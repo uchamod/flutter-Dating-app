@@ -1,8 +1,10 @@
 import "dart:convert";
 import "dart:io";
 
+import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:http/http.dart" as http;
 import "package:shared_preferences/shared_preferences.dart";
+import "package:undomain/provider/user_provider.dart";
 
 class Authservices {
   final baseUrl = "http://192.168.12.148:5000/api/auth";
@@ -152,5 +154,12 @@ class Authservices {
     } catch (err) {
       return {"success": false, "massage": "Unexpected error"};
     }
+  }
+
+  Future<void> logout(WidgetRef ref) async {
+    final SharedPreferences _pref = await SharedPreferences.getInstance();
+    _pref.remove("token");
+    ref.invalidate(currentUserProvider);
+    ref.invalidate(allUserProvider);
   }
 }

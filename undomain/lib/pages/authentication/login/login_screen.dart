@@ -1,8 +1,6 @@
-import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:undomain/pages/restart/restart.dart';
 import 'package:undomain/router/router_names.dart';
 import 'package:undomain/services/auth_services/authservices.dart';
 import 'package:undomain/util/global/global_function.dart';
@@ -42,18 +40,11 @@ class _LoginScreenState extends State<LoginScreen> {
       password: _passwordcontroller.text,
     );
     if (response["success"]) {
-      String base64String = response["user"]["profileUrl"];
-      Uint8List imagesBytes = base64Decode(base64String);
-      //MemoryImage(bytes)
-      GoRouter.of(context).goNamed(
-        RouterNames.homePage,
-        extra: {
-          "userId": response["user"]["id"],
-          "username": response["user"]["username"],
-          "email": response["user"]["email"],
-          "profileUrl": imagesBytes,
-        },
-      );
+      //restart app
+      RestartWidget.restartApp(context);
+      // GoRouter.of(
+      //   context,
+      // ).goNamed(RouterNames.mainpage, extra: {"isFromLogin": true});
     } else {
       _globalFunction.snackBarMassage(context, response["massage"], 3);
     }

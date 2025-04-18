@@ -10,3 +10,6 @@ final currentUserProvider = FutureProvider<Map<String, dynamic>>((ref) async {
 final allUserProvider = FutureProvider<Map<String, dynamic>>((ref) async {
   return await Userservices().getAllUser();
 });
+// final clearUserProvider = FutureProvider<void>((ref) async {
+//   return await currentUserProvider.
+// });

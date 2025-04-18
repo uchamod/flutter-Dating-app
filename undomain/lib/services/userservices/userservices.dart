@@ -85,22 +85,22 @@ class Userservices {
       final response = await http.get(
         Uri.parse("$baseUrl/getuserbyusername/$username"),
 
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
+        headers: {'Content-Type': 'application/json', 'Authorization': token},
       );
       final users = jsonDecode(response.body);
-      if (response.statusCode == 404 || response.statusCode == 500) {
+      if (response.statusCode == 404 ||
+          response.statusCode == 500 ||
+          response.statusCode == 400) {
+        print(users);
         return users;
       }
-
+      List<dynamic> allusers = users["users"];
       List<UserModel> fetchedUsers =
-          users.map((user) => UserModel.fromJson(user)).toList();
+          allusers.map((user) => UserModel.fromJson(user)).toList();
       // if (users["users"].length > 1) {
       //   return users["users"];
       // }
-      return {"success": false, users: fetchedUsers};
+      return {"success": true, "users": fetchedUsers};
     } catch (err) {
       print("client side error $err");
       return {"success": false, "massage": "Unexpected error"};

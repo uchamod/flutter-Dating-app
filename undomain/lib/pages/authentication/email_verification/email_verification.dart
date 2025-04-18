@@ -1,10 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
+import 'package:undomain/pages/restart/restart.dart';
 import 'package:undomain/router/router_names.dart';
 import 'package:undomain/services/auth_services/authservices.dart';
 import 'package:undomain/util/colors/colors.dart';
@@ -78,17 +77,9 @@ class _EmailVerificationState extends State<EmailVerification> {
         verifyCode: pin,
       );
       if (response["success"]) {
-        String base64String = response["user"]["profileUrl"];
-        Uint8List imagesBytes = base64Decode(base64String);
-        GoRouter.of(context).goNamed(
-          RouterNames.homePage,
-          extra: {
-            "userId": response["user"]["id"],
-            "username": response["user"]["username"],
-            "email": response["user"]["email"],
-            "profileUrl": imagesBytes,
-          },
-        );
+        // String base64String = response["user"]["profileUrl"];
+        // Uint8List imagesBytes = base64Decode(base64String);
+        RestartWidget.restartApp(context);
       } else {
         _globalFunction.snackBarMassage(context, response["massage"], 3);
       }

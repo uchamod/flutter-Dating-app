@@ -9,6 +9,7 @@ import 'package:undomain/pages/authentication/register/register_screen.dart';
 import 'package:undomain/pages/authentication/spalshscreen/spalsh.dart';
 import 'package:undomain/pages/authentication/terms&conditions/terms_and_conditions.dart';
 import 'package:undomain/pages/error/error_page.dart';
+import 'package:undomain/pages/home/home_screen.dart';
 import 'package:undomain/pages/home/main_screen.dart';
 import 'package:undomain/router/router_names.dart';
 
@@ -72,13 +73,13 @@ class Routes {
         path: "/home",
         name: RouterNames.homePage,
         builder: (context, state) {
-          // String userId = (state.extra as Map<String, dynamic>)["userId"];
+          bool isRestarted = (state.extra as Map<String, dynamic>)["start"];
           // String username = (state.extra as Map<String, dynamic>)["username"];
           // String email = (state.extra as Map<String, dynamic>)["email"];
           // Uint8List profileUrl =
           //     (state.extra as Map<String, dynamic>)["profileUrl"];
-          return Homepage(
-            // email: email,
+          return HomeScreen(
+            isRestart: isRestarted,
             // prfileUrl: profileUrl,
             // userId: userId,
             // username: username,
@@ -101,13 +102,16 @@ class Routes {
         },
       ),
       //main screen
-      // GoRoute(
-      //   path: "/main",
-      //   name: RouterNames.mainScreen,
-      //   builder: (context, state) {
-      //     return Homepage();
-      //   },
-      // ),
+      GoRoute(
+        path: "/main",
+        name: RouterNames.mainpage,
+        builder: (context, state) {
+          bool isFromLogin = (state.extra as Map<String, dynamic>)["isFromLogin"];
+          return Homepage(
+            isFromLogin: isFromLogin,
+          );
+        },
+      ),
     ],
   );
 }

@@ -7,48 +7,47 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:material_floating_search_bar_2/material_floating_search_bar_2.dart';
 import 'package:undomain/models/user/user_model.dart';
 import 'package:undomain/provider/user_provider.dart';
+import 'package:undomain/services/userservices/userservices.dart';
 import 'package:undomain/util/colors/colors.dart';
 import 'package:undomain/util/global/global_function.dart';
 import 'package:undomain/util/textstyles/text_styles.dart';
 import 'package:undomain/widgets/userListviwe/user_listviwe.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
-  // final String userId;
-  const HomeScreen({super.key});
+  final bool isRestart;
+  const HomeScreen({super.key, required this.isRestart});
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  String _serchItem = "";
   final FloatingSearchBarController _floatingSearchBarController =
       FloatingSearchBarController();
-  //final Userservices _userservices = Userservices();
+  final Userservices _userservices = Userservices();
   final GlobalFunction _globalFunction = GlobalFunction();
   late Map<String, dynamic> user;
   Uint8List? imagebytes;
   String username = "";
-  //get device user
-  // Future<void> _getDeviceUser() async {
-  //   user = await _userservices.getCurrentUser();
-  //   if (!user["succss"]) {
-  //     _globalFunction.snackBarMassage(context, user["massage"], 3);
-  //   } else {
-  //     setState(() {
-  //       username = user["user"]["username"];
+  List<UserModel> searchedUsers = [];
 
-  //       String base64String = user["user"]["profileUrl"];
-  //       imagebytes = base64Decode(base64String);
-  //     });
-  //   }
-  // }
+  Future<void> _searchUser(String query) async {
+    if (query.isEmpty) {
+      return;
+    }
+    Map<String, dynamic> response = await _userservices.getUserByUserName(
+      query,
+    );
+    if (!response["success"]) {
+      print(response["massage"]);
+      _globalFunction.snackBarMassage(context, response["massage"], 3);
+    } else {
+      setState(() {
+        searchedUsers = response["users"];
+      });
+    }
+  }
 
-  // @override
-  // void initState() {
-  //   _getDeviceUser();
-  //   super.initState();
-  // }
   bool _hasShownError = false;
   @override
   Widget build(BuildContext context) {
@@ -68,7 +67,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               (error, stackTrace) =>
                   Center(child: Text('Error: ${error.toString()}')),
           data: (currentuser) {
-            if (!currentuser["success"] && !_hasShownError) {
+            if ((!currentuser["success"] && !_hasShownError) ||
+                currentuser["user"] == null) {
               _hasShownError = true;
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 _globalFunction.snackBarMassage(
@@ -77,6 +77,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   3,
                 );
               });
+            }
+            if (currentuser["user"] == null) {
+              Center(child: CircularProgressIndicator(color: utilPrimaryRed));
             }
             UserModel user = currentuser["user"];
             String base64String = user.profileUrl;
@@ -148,9 +151,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                 ),
                 SizedBox(height: 16),
-               
+
                 //show all users(will avalible workers)
-                Expanded(child: UserListviwe()),
+                Expanded(child: UserListviwe(searchUsers: searchedUsers)),
               ],
             );
           },
@@ -186,12 +189,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       openAxisAlignment: 0,
       width: isPortrait ? 500 : 750,
       debounceDelay: Duration(microseconds: 400),
-
-      onQueryChanged: (query) {
-        // setState(() {
-        //   _serchItem = query;
-        // });
+      //serch
+      onSubmitted: (query) async {
+        searchedUsers = [];
+        await _searchUser(query);
       },
+      onQueryChanged: (query) {},
       transition: CircularFloatingSearchBarTransition(),
 
       actions: [],
@@ -204,3 +207,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 }
+//  UserModel(
+//                       contact: 0,
+//                       referenceUrl: "",
+//                       joinedDate: DateTime.now(),
+//                       updatedDate: DateTime.now(),
+//                       bio: "",
+//                       followers: [],
+//                       following: [],
+//                       serviceDiscription: "",
+//                       profileUrl: "",
+//                       id: "",
+//                       username: "unknown",
+//                       password: "1234",
+//                       email: "unknow@gmail.com",
+//                       isCreator: false,
+//                       isVerified: true,
+//                       verifyCode: "",
+//                       codeExpireTime: 1234,
+//                     );
