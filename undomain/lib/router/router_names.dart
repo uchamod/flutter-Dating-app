@@ -8,4 +8,6 @@ class RouterNames {
   static const String splashScreen = "/";
   static const String fogotpasswordScreen = "/fogotpassword";
   static const String wrapperScreen = "/wrapper";
+  static const String StremingConfigScreen = "/stream";
+  static const String zegoLiveScreen = "/live";
 }

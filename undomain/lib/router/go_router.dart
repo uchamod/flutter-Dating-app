@@ -11,6 +11,8 @@ import 'package:undomain/pages/authentication/terms&conditions/terms_and_conditi
 import 'package:undomain/pages/error/error_page.dart';
 import 'package:undomain/pages/home/home_screen.dart';
 import 'package:undomain/pages/home/main_screen.dart';
+import 'package:undomain/pages/streaming/live_screen.dart';
+import 'package:undomain/pages/streaming/log_streaming.dart';
 import 'package:undomain/router/router_names.dart';
 
 class Routes {
@@ -106,10 +108,26 @@ class Routes {
         path: "/main",
         name: RouterNames.mainpage,
         builder: (context, state) {
-          bool isFromLogin = (state.extra as Map<String, dynamic>)["isFromLogin"];
-          return Homepage(
-            isFromLogin: isFromLogin,
-          );
+          bool isFromLogin =
+              (state.extra as Map<String, dynamic>)["isFromLogin"];
+          return Homepage(isFromLogin: isFromLogin);
+        },
+      ),
+      GoRoute(
+        path: "/stream",
+        name: RouterNames.StremingConfigScreen,
+        builder: (context, state) {
+          // bool isFromLogin = (state.extra as Map<String, dynamic>)["isFromLogin"];
+          return LogStreaming();
+        },
+      ),
+      GoRoute(
+        path: "/live",
+        name: RouterNames.zegoLiveScreen,
+        builder: (context, state) {
+          bool isHost = (state.extra as Map<String, dynamic>)["isHost"];
+          String liveId = (state.extra as Map<String, dynamic>)["liveId"];
+          return ZegoLiveScreen(isHost: isHost, liveId: liveId);
         },
       ),
     ],
