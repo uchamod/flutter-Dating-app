@@ -31,7 +31,7 @@ class _EmailVerificationState extends State<EmailVerification> {
   late Timer _timer;
   int _start = 60;
   bool _isLoading = false;
-  TextEditingController _pincontroller = TextEditingController();
+  final TextEditingController _pincontroller = TextEditingController();
   final GlobalFunction _globalFunction = GlobalFunction();
   final Authservices _authservices = Authservices();
   @override
@@ -67,7 +67,6 @@ class _EmailVerificationState extends State<EmailVerification> {
     if (pin.isEmpty || widget.userid.isEmpty) {
       _globalFunction.snackBarMassage(context, "Empty User Data", 3);
       return;
-      // GoRouter.of(context).goNamed(RouterNames.homePage);
     }
 
     //for user registration
@@ -77,8 +76,6 @@ class _EmailVerificationState extends State<EmailVerification> {
         verifyCode: pin,
       );
       if (response["success"]) {
-        // String base64String = response["user"]["profileUrl"];
-        // Uint8List imagesBytes = base64Decode(base64String);
         RestartWidget.restartApp(context);
       } else {
         _globalFunction.snackBarMassage(context, response["massage"], 3);
@@ -110,7 +107,6 @@ class _EmailVerificationState extends State<EmailVerification> {
       height: (pinputSize - 0.08) / 5,
       textStyle: TextStyle(fontSize: 20, color: utilPrimaryBlack),
       decoration: BoxDecoration(
-        //  border: Border.all(color: utilPrimaryGrey),
         borderRadius: BorderRadius.circular(10),
         color: utilPrimaryWhite,
         boxShadow: [
@@ -132,7 +128,6 @@ class _EmailVerificationState extends State<EmailVerification> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            //SizedBox(height: MediaQuery.of(context).size.height * 0.01),
             //title
             Text("Date NET.", style: textDisplay),
             Column(

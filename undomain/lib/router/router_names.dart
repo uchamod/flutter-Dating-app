@@ -10,4 +10,5 @@ class RouterNames {
   static const String wrapperScreen = "/wrapper";
   static const String StremingConfigScreen = "/stream";
   static const String zegoLiveScreen = "/live";
+  static const String mainStremaingPage = "/livestream";
 }

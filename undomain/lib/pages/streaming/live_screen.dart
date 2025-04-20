@@ -25,9 +25,9 @@ class _ZegoLiveScreenState extends ConsumerState<ZegoLiveScreen> {
 
   @override
   void initState() {
-    
     super.initState();
   }
+
   @override
   void dispose() {
     ZegoUIKit().leaveRoom();
@@ -69,25 +69,22 @@ class _ZegoLiveScreenState extends ConsumerState<ZegoLiveScreen> {
             userID: user.id,
             userName: user.username,
             liveID: widget.liveId,
+            //when end the streaming
             events: ZegoUIKitPrebuiltLiveStreamingEvents(
-              //when end the steaming
-              onEnded: (
-                ZegoLiveStreamingEndEvent event,
-                VoidCallback defultAction,
-              ) {
-                if (ZegoLiveStreamingEndReason.hostEnd == event.reason) {
-                  if (event.isFromMinimizing) {
-                    /// now is minimizing state, not need to navigate, just switch to idle
+              onEnded: (event, defaultAction) {
+                if (event.reason == ZegoLiveStreamingEndReason.hostEnd) {
                   GoRouter.of(
-                      context,
-                    ).goNamed(RouterNames.StremingConfigScreen);
-                  } else {
-                    GoRouter.of(
-                      context,
-                    ).goNamed(RouterNames.StremingConfigScreen);
-                  }
+                    context,
+                  ).goNamed(RouterNames.StremingConfigScreen);
+                }
+                if (event.reason == ZegoLiveStreamingEndReason.localLeave) {
+                  GoRouter.of(
+                    context,
+                  ).goNamed(RouterNames.StremingConfigScreen);
                 } else {
-                  defultAction.call();
+                  GoRouter.of(
+                    context,
+                  ).goNamed(RouterNames.StremingConfigScreen);
                 }
               },
             ),
@@ -95,13 +92,7 @@ class _ZegoLiveScreenState extends ConsumerState<ZegoLiveScreen> {
                 (widget.isHost
                       ? ZegoUIKitPrebuiltLiveStreamingConfig.host()
                       : ZegoUIKitPrebuiltLiveStreamingConfig.audience())
-                  ..avatarBuilder = customAvatarBuilder
-                  ..confirmDialogInfo = ZegoLiveStreamingDialogInfo(
-                    title: "Leave confirm",
-                    message: "Do you want to end?",
-                    cancelButtonName: "Cancel",
-                    confirmButtonName: "Confirm",
-                  ),
+                  ..avatarBuilder = customAvatarBuilder,
           );
         },
       ),

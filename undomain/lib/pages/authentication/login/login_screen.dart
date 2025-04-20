@@ -42,9 +42,6 @@ class _LoginScreenState extends State<LoginScreen> {
     if (response["success"]) {
       //restart app
       RestartWidget.restartApp(context);
-      // GoRouter.of(
-      //   context,
-      // ).goNamed(RouterNames.mainpage, extra: {"isFromLogin": true});
     } else {
       _globalFunction.snackBarMassage(context, response["massage"], 3);
     }

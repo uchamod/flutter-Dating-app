@@ -13,6 +13,7 @@ import 'package:undomain/pages/home/home_screen.dart';
 import 'package:undomain/pages/home/main_screen.dart';
 import 'package:undomain/pages/streaming/live_screen.dart';
 import 'package:undomain/pages/streaming/log_streaming.dart';
+import 'package:undomain/pages/streaming/streaming_screen.dart';
 import 'package:undomain/router/router_names.dart';
 
 class Routes {
@@ -76,15 +77,10 @@ class Routes {
         name: RouterNames.homePage,
         builder: (context, state) {
           bool isRestarted = (state.extra as Map<String, dynamic>)["start"];
-          // String username = (state.extra as Map<String, dynamic>)["username"];
-          // String email = (state.extra as Map<String, dynamic>)["email"];
-          // Uint8List profileUrl =
-          //     (state.extra as Map<String, dynamic>)["profileUrl"];
+        
           return HomeScreen(
             isRestart: isRestarted,
-            // prfileUrl: profileUrl,
-            // userId: userId,
-            // username: username,
+         
           );
         },
       ),
@@ -96,6 +92,7 @@ class Routes {
           return FogotPassword();
         },
       ),
+      //wrapper page
       GoRoute(
         path: "/wrapper",
         name: RouterNames.wrapperScreen,
@@ -110,17 +107,21 @@ class Routes {
         builder: (context, state) {
           bool isFromLogin =
               (state.extra as Map<String, dynamic>)["isFromLogin"];
-          return Homepage(isFromLogin: isFromLogin);
+          int index =
+              (state.extra as Map<String, dynamic>)["index"];
+          return Homepage(isFromLogin: isFromLogin,index: index,);
         },
       ),
+      //stream logpage
       GoRoute(
         path: "/stream",
         name: RouterNames.StremingConfigScreen,
         builder: (context, state) {
-          // bool isFromLogin = (state.extra as Map<String, dynamic>)["isFromLogin"];
+        
           return LogStreaming();
         },
       ),
+      //zego live stream page
       GoRoute(
         path: "/live",
         name: RouterNames.zegoLiveScreen,
@@ -128,6 +129,14 @@ class Routes {
           bool isHost = (state.extra as Map<String, dynamic>)["isHost"];
           String liveId = (state.extra as Map<String, dynamic>)["liveId"];
           return ZegoLiveScreen(isHost: isHost, liveId: liveId);
+        },
+      ),
+      //llive first look page
+      GoRoute(
+        path: "/livestream",
+        name: RouterNames.mainStremaingPage,
+        builder: (context, state) {
+          return StreamingScreen();
         },
       ),
     ],

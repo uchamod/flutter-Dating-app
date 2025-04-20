@@ -155,7 +155,7 @@ class Authservices {
       return {"success": false, "massage": "Unexpected error"};
     }
   }
-
+//log out
   Future<void> logout(WidgetRef ref) async {
     final SharedPreferences _pref = await SharedPreferences.getInstance();
     _pref.remove("token");

@@ -10,17 +10,14 @@ import 'package:undomain/util/textstyles/text_styles.dart';
 
 class Homepage extends StatefulWidget {
   final bool isFromLogin;
-  // final String? username;
-  // final String? email;
-  // final Uint8List? prfileUrl;
+  final int index;
+  
   const Homepage({
     super.key,
     required this.isFromLogin,
+    required this.index,
 
-    // this.userId,
-    // this.username,
-    // this.email,
-    // this.prfileUrl,
+  
   });
 
   @override
@@ -29,6 +26,7 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   late PersistentTabController _tabController;
+ 
   //renderd screens
   List<Widget> _buildScreen() {
     return [
@@ -40,11 +38,7 @@ class _HomepageState extends State<Homepage> {
     ];
   }
 
-  // void _restart() {
-  //   if (widget.isFromLogin) {
-  //     setState(() {});
-  //   }
-  // }
+  
 
   //nav bar items
   List<PersistentBottomNavBarItem> _navBarItems() {
@@ -86,12 +80,12 @@ class _HomepageState extends State<Homepage> {
 
   @override
   void initState() {
-    _tabController = PersistentTabController(initialIndex: 0);
+    _tabController = PersistentTabController(initialIndex: widget.index);
     //_restart();
     super.initState();
   }
 
-  //Uint8List imageBytes = base64Decode()
+ 
   @override
   Widget build(BuildContext context) {
     return PersistentTabView(
@@ -100,7 +94,7 @@ class _HomepageState extends State<Homepage> {
       controller: _tabController,
       items: _navBarItems(),
       confineToSafeArea: true,
-      // backgroundColor: Color.fromARGB(247, 254, 254, 254),
+     
       handleAndroidBackButtonPress: true,
       resizeToAvoidBottomInset: true,
       stateManagement: true,

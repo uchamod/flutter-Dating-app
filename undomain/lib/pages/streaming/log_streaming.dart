@@ -3,12 +3,12 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:undomain/router/router_names.dart';
+import 'package:undomain/util/colors/colors.dart';
 import 'package:undomain/util/global/global_varibles.dart';
 import 'package:undomain/util/textstyles/text_styles.dart';
 import 'package:undomain/widgets/buttons/icon_button.dart';
 import 'package:undomain/widgets/expansionTitle/expansion_title.dart';
 import 'package:undomain/widgets/textboxes/authtext_box.dart';
-import 'package:zego_uikit_prebuilt_live_streaming/zego_uikit_prebuilt_live_streaming.dart';
 
 class LogStreaming extends StatefulWidget {
   const LogStreaming({super.key});
@@ -21,14 +21,14 @@ class _LogStreamingState extends State<LogStreaming> {
   final TextEditingController _controller = TextEditingController();
 
   String? selectedOption = "Comments";
-
+//additional settings
   final List<String> options = [
     "Comments",
     "Distribution setting",
     "Streaming filters",
     "History",
   ];
-
+//nav to streaming page
   void _gotoLivePage(
     BuildContext context, {
     required bool isHost,
@@ -45,12 +45,25 @@ class _LogStreamingState extends State<LogStreaming> {
   Widget build(BuildContext context) {
     final deviceHeight = MediaQuery.of(context).size.height;
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            GoRouter.of(context).goNamed(
+              RouterNames.mainpage,
+              extra: {"isFromLogin": false, "index": 2},
+            );
+          },
+          icon: Icon(Icons.arrow_back_outlined),
+          iconSize: 24,
+          color: utilPrimaryBlack,
+        ),
+      ),
       body: SingleChildScrollView(
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         child: Padding(
           padding: EdgeInsets.symmetric(
             horizontal: mainPagePaddingH,
-            vertical: mainPagePaddingV + deviceHeight * 0.08,
+            vertical: mainPagePaddingV,
           ),
           child: Column(
             children: [
@@ -85,11 +98,6 @@ class _LogStreamingState extends State<LogStreaming> {
               GestureDetector(
                 onTap: () {
                   // Prevent multiple instances when minimized
-                  if (ZegoUIKitPrebuiltLiveStreamingController()
-                      .minimize
-                      .isMinimizing) {
-                    return;
-                  }
 
                   _gotoLivePage(
                     context,
