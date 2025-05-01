@@ -11,6 +11,8 @@ import 'package:undomain/pages/authentication/terms&conditions/terms_and_conditi
 import 'package:undomain/pages/error/error_page.dart';
 import 'package:undomain/pages/home/home_screen.dart';
 import 'package:undomain/pages/home/main_screen.dart';
+import 'package:undomain/pages/profile/profile_scren.dart';
+import 'package:undomain/pages/reels/reel_screen.dart';
 import 'package:undomain/pages/streaming/live_screen.dart';
 import 'package:undomain/pages/streaming/log_streaming.dart';
 import 'package:undomain/pages/streaming/streaming_screen.dart';
@@ -77,11 +79,8 @@ class Routes {
         name: RouterNames.homePage,
         builder: (context, state) {
           bool isRestarted = (state.extra as Map<String, dynamic>)["start"];
-        
-          return HomeScreen(
-            isRestart: isRestarted,
-         
-          );
+
+          return HomeScreen(isRestart: isRestarted);
         },
       ),
       //Homepage
@@ -107,9 +106,13 @@ class Routes {
         builder: (context, state) {
           bool isFromLogin =
               (state.extra as Map<String, dynamic>)["isFromLogin"];
-          int index =
-              (state.extra as Map<String, dynamic>)["index"];
-          return Homepage(isFromLogin: isFromLogin,index: index,);
+          int index = (state.extra as Map<String, dynamic>)["index"];
+          String userId = (state.extra as Map<String, dynamic>)["userId"];
+          return Homepage(
+            isFromLogin: isFromLogin,
+            index: index,
+            userId: userId,
+          );
         },
       ),
       //stream logpage
@@ -117,7 +120,6 @@ class Routes {
         path: "/stream",
         name: RouterNames.StremingConfigScreen,
         builder: (context, state) {
-        
           return LogStreaming();
         },
       ),
@@ -137,6 +139,21 @@ class Routes {
         name: RouterNames.mainStremaingPage,
         builder: (context, state) {
           return StreamingScreen();
+        },
+      ),
+      GoRoute(
+        path: "/reel",
+        name: RouterNames.reelPage,
+        builder: (context, state) {
+          return ReelScreen();
+        },
+      ),
+      GoRoute(
+        path: "/profile",
+        name: RouterNames.profilePage,
+        builder: (context, state) {
+          String userId = (state.extra as Map<String, dynamic>)["userId"];
+          return ProfileScren(userId: userId);
         },
       ),
     ],

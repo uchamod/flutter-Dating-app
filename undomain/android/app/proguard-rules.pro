@@ -1,1 +1,2 @@
 -keep class **.zego.** { *; }
+-dontwarn com.itgsa.opensdk.mediaunit.KaraokeMediaHelper

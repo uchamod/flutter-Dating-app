@@ -5,7 +5,7 @@ import "package:shared_preferences/shared_preferences.dart";
 import "package:undomain/models/user/user_model.dart";
 
 class Userservices {
-  final baseUrl = "http://192.168.12.148:5000/api/user";
+  final baseUrl = "http://192.168.97.148:5000/api/user";
   //get jwt token
   Future<String?> getToken() async {
     final pref = await SharedPreferences.getInstance();

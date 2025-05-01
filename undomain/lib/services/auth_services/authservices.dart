@@ -7,7 +7,7 @@ import "package:shared_preferences/shared_preferences.dart";
 import "package:undomain/provider/user_provider.dart";
 
 class Authservices {
-  final baseUrl = "http://192.168.12.148:5000/api/auth";
+  final baseUrl = "http://192.168.97.148:5000/api/auth";
   //register new user
   Future<Map<String, dynamic>> register(
     File profileUrl, {
@@ -155,7 +155,8 @@ class Authservices {
       return {"success": false, "massage": "Unexpected error"};
     }
   }
-//log out
+
+  //log out
   Future<void> logout(WidgetRef ref) async {
     final SharedPreferences _pref = await SharedPreferences.getInstance();
     _pref.remove("token");

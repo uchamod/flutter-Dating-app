@@ -11,13 +11,12 @@ import 'package:undomain/util/textstyles/text_styles.dart';
 class Homepage extends StatefulWidget {
   final bool isFromLogin;
   final int index;
-  
+  final String userId;
   const Homepage({
     super.key,
     required this.isFromLogin,
     required this.index,
-
-  
+    required this.userId,
   });
 
   @override
@@ -26,7 +25,7 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   late PersistentTabController _tabController;
- 
+
   //renderd screens
   List<Widget> _buildScreen() {
     return [
@@ -34,11 +33,9 @@ class _HomepageState extends State<Homepage> {
       ReelScreen(),
       StreamingScreen(),
       UpdateScreen(),
-      ProfileScren(),
+      ProfileScren(userId: widget.userId),
     ];
   }
-
-  
 
   //nav bar items
   List<PersistentBottomNavBarItem> _navBarItems() {
@@ -85,7 +82,6 @@ class _HomepageState extends State<Homepage> {
     super.initState();
   }
 
- 
   @override
   Widget build(BuildContext context) {
     return PersistentTabView(
@@ -94,7 +90,7 @@ class _HomepageState extends State<Homepage> {
       controller: _tabController,
       items: _navBarItems(),
       confineToSafeArea: true,
-     
+
       handleAndroidBackButtonPress: true,
       resizeToAvoidBottomInset: true,
       stateManagement: true,

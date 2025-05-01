@@ -78,7 +78,7 @@ class _WrapperScreenState extends State<WrapperScreen> {
     return isInitUser
         ? TermsAndConditions()
         : isLoged
-        ? Homepage(isFromLogin: false,index: 0,)
+        ? Homepage(isFromLogin: false, index: 0, userId: userId!)
         : LoginScreen();
   }
 }
