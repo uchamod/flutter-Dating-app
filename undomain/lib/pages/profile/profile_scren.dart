@@ -55,6 +55,8 @@ class _ProfileScrenState extends ConsumerState<ProfileScren> {
 
     setState(() {
       isLoading = false;
+      _titlecontroller.clear();
+      _videofile = null;
     });
   }
 

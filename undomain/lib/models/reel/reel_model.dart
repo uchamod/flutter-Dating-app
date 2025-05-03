@@ -6,7 +6,7 @@ class ReelModel {
   final List likes;
   final List disLikes;
   final List<Map<String, String>> comments;
-
+  final bool processed;
   final String userId;
 
   final String? weblink;
@@ -21,7 +21,7 @@ class ReelModel {
     required this.likes,
     required this.disLikes,
     required this.comments,
-
+    required this.processed,
     required this.weblink,
     required this.joinedDate,
     required this.updatedDate,
@@ -36,8 +36,8 @@ class ReelModel {
       "comments": comments,
       "userId": userId,
       "like": likes,
-      "dislike": disLikes,
-
+      "dislikes": disLikes,
+      "processed": processed,
       "weblink": weblink,
       "joinedDate": joinedDate,
       "updatedDate": updatedDate,
@@ -48,17 +48,17 @@ class ReelModel {
   factory ReelModel.fromJson(Map<String, dynamic> json) {
     return ReelModel(
       reelId: json["reelId"],
-      title: json["title"],
-      tags: json["tags"] ?? [],
-      url: json["url"],
-      comments: List<Map<String, String>>.from(json["comments"]) ?? [],
       userId: json["userId"],
+      title: json["title"],
+      url: json["url"],
+      joinedDate: DateTime.parse(json["joinedDate"]),
+      updatedDate: DateTime.parse(json["updatedDate"]),
+      weblink: json["weblink"] ?? "google",
+      processed: json["processed"],
       likes: json["likes"] ?? [],
-      disLikes: json["disLike"] ?? [],
-
-      weblink: json["weblink"] ?? "",
-      joinedDate: DateTime.parse(json["createdAt"]),
-      updatedDate: DateTime.parse(json["updatedAt"]),
+      disLikes: json["disLikes"] ?? [],
+      comments: List<Map<String, String>>.from(json["comments"]) ?? [],
+      tags: json["tags"] ?? [],
     );
   }
 }

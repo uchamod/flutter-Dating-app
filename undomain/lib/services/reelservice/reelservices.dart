@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import "package:http/http.dart" as http;
+import 'package:undomain/models/reel/reel_model.dart';
 
 class ReelsService {
   final baseUrl = "http://192.168.97.148:5000/api/resources";
@@ -57,6 +58,84 @@ class ReelsService {
       return response;
     } catch (err) {
       print("error $err");
+      return {"success": false, "message": "client side error"};
+    }
+  }
+
+  //fetch all videos
+  Future<List<Map<String, dynamic>>> fetchAllVideos({
+    int page = 1,
+    int limit = 10,
+  }) async {
+    try {
+      final response = await http.get(
+        Uri.parse("$baseUrl/fetch-videos?page=$page&limit=$limit"),
+        headers: {'Content-Type': 'application/json'},
+      );
+      final decodeResponseBody = json.decode(response.body);
+      if (response.statusCode != 200) {
+        print(decodeResponseBody);
+        return [decodeResponseBody];
+      }
+
+      List<dynamic> reelList = decodeResponseBody["data"]["videos"];
+
+      List<ReelModel> reelModelList =
+          reelList.map((video) => ReelModel.fromJson(video)).toList();
+
+      return [
+        {"success": true, "reels": reelModelList},
+      ];
+    } catch (err) {
+      print("client side error $err");
+      return [
+        {"success": false, "message": "client side error"},
+      ];
+    }
+  }
+
+  //like reels
+  Future<Map<String, dynamic>> likeReels({
+    required String userId,
+    required String reelId,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse("${baseUrl}/like-videos"),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({"userId": userId, "reelId": reelId}),
+      );
+      final decodeResponse = json.decode(response.body);
+      if (response.statusCode != 200) {
+        return decodeResponse;
+      }
+
+      return decodeResponse;
+    } catch (err) {
+      print("client side error $err");
+      return {"success": false, "message": "client side error"};
+    }
+  }
+
+  //dislike
+  Future<Map<String, dynamic>> dislikeReels({
+    required String userId,
+    required String reelId,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse("${baseUrl}/dislike-videos"),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({"userId": userId, "reelId": reelId}),
+      );
+      final decodeResponse = json.decode(response.body);
+      if (response.statusCode != 200) {
+        return decodeResponse;
+      }
+
+      return decodeResponse;
+    } catch (err) {
+      print("client side error $err");
       return {"success": false, "message": "client side error"};
     }
   }
