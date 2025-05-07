@@ -116,7 +116,7 @@ class ReelFeedNotifier extends StateNotifier<ReelFeedState> {
     }
   }
 
-  //togggle like
+  //togggle dislike
   Future<void> toggledisLike({
     required String reelId,
     required String userId,

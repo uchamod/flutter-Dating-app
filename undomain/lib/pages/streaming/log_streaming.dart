@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:undomain/router/router_names.dart';
+import 'package:undomain/services/admob_service/interstitial_ad.dart';
 import 'package:undomain/util/colors/colors.dart';
 import 'package:undomain/util/global/global_varibles.dart';
 import 'package:undomain/util/textstyles/text_styles.dart';
@@ -21,14 +22,14 @@ class _LogStreamingState extends State<LogStreaming> {
   final TextEditingController _controller = TextEditingController();
 
   String? selectedOption = "Comments";
-//additional settings
+  //additional settings
   final List<String> options = [
     "Comments",
     "Distribution setting",
     "Streaming filters",
     "History",
   ];
-//nav to streaming page
+  //nav to streaming page
   void _gotoLivePage(
     BuildContext context, {
     required bool isHost,
@@ -38,6 +39,12 @@ class _LogStreamingState extends State<LogStreaming> {
       RouterNames.zegoLiveScreen,
       extra: {"isHost": isHost, "liveId": liveId},
     );
+  }
+
+  @override
+  void initState() {
+    InterstitialAdService().showInterstitialAd();
+    super.initState();
   }
 
   final String localUserID = math.Random().nextInt(10000).toString();
@@ -50,7 +57,7 @@ class _LogStreamingState extends State<LogStreaming> {
           onPressed: () {
             GoRouter.of(context).goNamed(
               RouterNames.mainpage,
-              extra: {"isFromLogin": false, "index": 2},
+              extra: {"isFromLogin": false, "index": 2, "userId": ""},
             );
           },
           icon: Icon(Icons.arrow_back_outlined),

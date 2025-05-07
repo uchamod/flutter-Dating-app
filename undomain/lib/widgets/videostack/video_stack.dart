@@ -9,17 +9,27 @@ import 'package:visibility_detector/visibility_detector.dart';
 class VideoStack extends ConsumerStatefulWidget {
   final ReelModel reel;
   final int index;
-  const VideoStack({super.key, required this.reel, required this.index});
+  final String userId;
+  const VideoStack({
+    super.key,
+    required this.reel,
+    required this.index,
+    required this.userId,
+  });
 
   @override
   ConsumerState<VideoStack> createState() => _VideoStackState();
 }
 
-class _VideoStackState extends ConsumerState<VideoStack> with WidgetsBindingObserver{
+class _VideoStackState extends ConsumerState<VideoStack>
+    with WidgetsBindingObserver, RouteAware {
   late VideoPlayerController _controller;
   bool _isPlaying = false;
   bool _isInitialized = false;
   late bool _isLiked;
+  late bool _isdisLiked;
+  RouteObserver<ModalRoute<void>>? _routeObserver;
+  bool _isRouteActive = true;
   Future<void> _initializeVideoPlayer() async {
     try {
       // Initialize the controller first with the URL
@@ -40,7 +50,7 @@ class _VideoStackState extends ConsumerState<VideoStack> with WidgetsBindingObse
 
       // Check if this video should be playing based on current index
       final currentIndex = ref.read(currentReelIndexProvider);
-      if (currentIndex == widget.index) {
+      if (currentIndex == widget.index && _isRouteActive && mounted) {
         _controller.play();
         setState(() {
           _isPlaying = true;
@@ -58,14 +68,90 @@ class _VideoStackState extends ConsumerState<VideoStack> with WidgetsBindingObse
 
   @override
   void initState() {
+    super.initState();
     WidgetsBinding.instance.addObserver(this);
     _initializeVideoPlayer();
     _isLiked = widget.reel.likes.contains(widget.reel.userId);
-    super.initState();
+    _isdisLiked = widget.reel.disLikes.contains(widget.reel.userId);
+    //subcribe to route changes
+    _routeObserver = RouteObserver<ModalRoute<void>>();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final modelRoute = ModalRoute.of(context);
+      if (modelRoute != null) {
+        _routeObserver?.subscribe(this, modelRoute);
+      }
+    });
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Re-subscribe to route observer if the route changes
+    final modelRoute = ModalRoute.of(context);
+    if (modelRoute != null) {
+      _routeObserver?.subscribe(this, modelRoute);
+    }
+  }
+
+  @override
+  void didPush() {
+    // Route was pushed, mark as active
+    _isRouteActive = true;
+    if (_isInitialized &&
+        !_isPlaying &&
+        ref.read(currentReelIndexProvider) == widget.index) {
+      _controller.play();
+      setState(() {
+        _isPlaying = true;
+      });
+    }
+    super.didPush();
+  }
+
+  @override
+  void didPopNext() {
+    // Route was popped and this route is now visible again
+    _isRouteActive = true;
+    if (_isInitialized &&
+        !_isPlaying &&
+        ref.read(currentReelIndexProvider) == widget.index) {
+      _controller.play();
+      setState(() {
+        _isPlaying = true;
+      });
+    }
+    super.didPopNext();
+  }
+
+  @override
+  void didPop() {
+    // Route was popped, mark as inactive
+    _isRouteActive = false;
+    if (_isInitialized && _isPlaying) {
+      _controller.pause();
+      setState(() {
+        _isPlaying = false;
+      });
+    }
+    super.didPop();
+  }
+
+  @override
+  void didPushNext() {
+    // Another route was pushed on top, mark as inactive
+    _isRouteActive = false;
+    if (_isInitialized && _isPlaying) {
+      _controller.pause();
+      setState(() {
+        _isPlaying = false;
+      });
+    }
+    super.didPushNext();
+  }
+
+  //pause and play video when touch the screen
   void _ontouchScreen() {
-    if (!_isInitialized) return;
+    if (!_isInitialized || !_isRouteActive) return;
     setState(() {
       _isPlaying = !_isPlaying;
       _isPlaying ? _controller.play() : _controller.pause();
@@ -79,6 +165,11 @@ class _VideoStackState extends ConsumerState<VideoStack> with WidgetsBindingObse
     if (oldWidget.reel.likes != widget.reel.likes) {
       setState(() {
         _isLiked = widget.reel.likes.contains(widget.reel.userId);
+      });
+    }
+    if (oldWidget.reel.disLikes != widget.reel.disLikes) {
+      setState(() {
+        _isdisLiked = widget.reel.disLikes.contains(widget.userId);
       });
     }
   }
@@ -95,23 +186,51 @@ class _VideoStackState extends ConsumerState<VideoStack> with WidgetsBindingObse
           _isPlaying = false;
         });
       }
+    } else if (state == AppLifecycleState.resumed && _isRouteActive) {
+      if (_isInitialized &&
+          !_isPlaying &&
+          ref.read(currentReelIndexProvider) == widget.index) {
+        _controller.play();
+        setState(() {
+          _isPlaying = true;
+        });
+      }
     }
   }
 
+  //haddle like function
   Future<void> _haddleLikeToggle() async {
+    if (!_isRouteActive) return;
     setState(() {
       _isLiked = !_isLiked;
     });
     ref
         .read(reelFeedProvider.notifier)
-        .toggleLike(reelId: widget.reel.reelId, userId: widget.reel.userId);
+        .toggleLike(reelId: widget.reel.reelId, userId: widget.userId);
   }
 
+  //haddle dislike function
+  Future<void> _haddledisLikeToggle() async {
+    if (!_isRouteActive) return;
+    setState(() {
+      _isdisLiked = !_isdisLiked;
+    });
+    ref
+        .read(reelFeedProvider.notifier)
+        .toggledisLike(reelId: widget.reel.reelId, userId: widget.userId);
+  }
+
+  //dispose video player
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    if (_controller.value.isInitialized) {
-      _controller.pause();
+
+    _routeObserver?.unsubscribe(this);
+
+    if (_isInitialized) {
+      if (_controller.value.isPlaying) {
+        _controller.pause();
+      }
       _controller.dispose();
     }
     super.dispose();
@@ -121,19 +240,29 @@ class _VideoStackState extends ConsumerState<VideoStack> with WidgetsBindingObse
   Widget build(BuildContext context) {
     final currentIndex = ref.watch(currentReelIndexProvider);
     // Check if this video should be playing
-
-    if (currentIndex == widget.index && !_isPlaying) {
-      _controller.play();
-      _isPlaying = true;
-    } else if (currentIndex != widget.index && _isPlaying) {
-      _controller.pause();
-      _isPlaying = false;
+    if (_isInitialized && _isRouteActive) {
+      if (currentIndex == widget.index && !_isPlaying) {
+        _controller.play();
+        setState(() {
+          _isPlaying = true;
+        });
+      } else if (currentIndex != widget.index && _isPlaying) {
+        _controller.pause();
+        setState(() {
+          _isPlaying = false;
+        });
+      } else if (_isPlaying) {
+        _controller.pause();
+        setState(() {
+          _isPlaying = false;
+        });
+      }
     }
 
     return VisibilityDetector(
       key: Key('video-${widget.reel.reelId}'),
       onVisibilityChanged: (visibilityInfo) {
-        if (!_isInitialized || !mounted) return;
+        if (!_isInitialized || !mounted || !_isRouteActive) return;
         //detect video visibility
         if (visibilityInfo.visibleFraction < 0.5 && _isPlaying) {
           _controller.pause();
@@ -182,7 +311,14 @@ class _VideoStackState extends ConsumerState<VideoStack> with WidgetsBindingObse
                   ),
                 ),
                 SizedBox(height: 20),
-                Icon(Icons.thumb_down, color: utilPrimaryWhite, size: 28),
+                GestureDetector(
+                  onTap: _haddledisLikeToggle,
+                  child: Icon(
+                    Icons.thumb_down,
+                    color: _isdisLiked ? utilPrimaryRed : utilPrimaryWhite,
+                    size: 28,
+                  ),
+                ),
                 SizedBox(height: 20),
                 Icon(Icons.comment_outlined, color: utilPrimaryWhite, size: 28),
               ],

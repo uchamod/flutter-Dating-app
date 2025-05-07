@@ -5,7 +5,8 @@ import 'package:undomain/util/colors/colors.dart';
 import 'package:undomain/widgets/videostack/video_stack.dart';
 
 class ReelScreen extends ConsumerStatefulWidget {
-  const ReelScreen({super.key});
+  final String userId;
+  const ReelScreen({required this.userId, super.key});
 
   @override
   ConsumerState<ReelScreen> createState() => _ReelScreenState();
@@ -81,7 +82,7 @@ class _ReelScreenState extends ConsumerState<ReelScreen> {
             child: CircularProgressIndicator(color: utilPrimaryWhite),
           );
         }
-        return VideoStack(reel: reelFeedState.reels[index], index: index);
+        return VideoStack(reel: reelFeedState.reels[index], index: index,userId: widget.userId,);
       },
     );
   }

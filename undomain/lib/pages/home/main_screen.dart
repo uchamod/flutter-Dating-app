@@ -30,7 +30,7 @@ class _HomepageState extends State<Homepage> {
   List<Widget> _buildScreen() {
     return [
       HomeScreen(isRestart: widget.isFromLogin),
-      ReelScreen(),
+      ReelScreen(userId: widget.userId),
       StreamingScreen(),
       UpdateScreen(),
       ProfileScren(userId: widget.userId),
@@ -94,6 +94,7 @@ class _HomepageState extends State<Homepage> {
       handleAndroidBackButtonPress: true,
       resizeToAvoidBottomInset: true,
       stateManagement: true,
+
       hideNavigationBarWhenKeyboardAppears: true,
       margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: NavBarDecoration(

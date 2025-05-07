@@ -19,11 +19,17 @@ import 'package:undomain/pages/streaming/streaming_screen.dart';
 import 'package:undomain/router/router_names.dart';
 
 class Routes {
+  // static final RouteObserver<ModalRoute> shellRouteObserver = RouteObserver();
+  // static final GlobalKey<NavigatorState> _rootNavigatorKey =
+  //     GlobalKey<NavigatorState>();
   final goRouter = GoRouter(
+    // navigatorKey: _rootNavigatorKey,
+    // observers: [shellRouteObserver],
     initialLocation: "/",
     errorPageBuilder: (context, state) {
       return const MaterialPage(child: ErrorPage());
     },
+
     routes: [
       //splash screen
       GoRoute(
@@ -145,7 +151,8 @@ class Routes {
         path: "/reel",
         name: RouterNames.reelPage,
         builder: (context, state) {
-          return ReelScreen();
+          String userId = (state.extra as Map<String, dynamic>)["userId"];
+          return ReelScreen(userId: userId);
         },
       ),
       GoRoute(

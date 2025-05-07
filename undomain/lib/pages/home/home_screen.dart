@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:material_floating_search_bar_2/material_floating_search_bar_2.dart';
 import 'package:undomain/models/user/user_model.dart';
+import 'package:undomain/pages/admob/banner_ad.dart';
 import 'package:undomain/provider/user_provider.dart';
 import 'package:undomain/services/userservices/userservices.dart';
 import 'package:undomain/util/colors/colors.dart';
@@ -150,8 +151,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: 16),
-
+               // SizedBox(height: 16),
+                  BannerAdWidget(),
                 //show all users(will avalible workers)
                 Expanded(child: UserListviwe(searchUsers: searchedUsers)),
               ],
@@ -207,22 +208,3 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 }
-//  UserModel(
-//                       contact: 0,
-//                       referenceUrl: "",
-//                       joinedDate: DateTime.now(),
-//                       updatedDate: DateTime.now(),
-//                       bio: "",
-//                       followers: [],
-//                       following: [],
-//                       serviceDiscription: "",
-//                       profileUrl: "",
-//                       id: "",
-//                       username: "unknown",
-//                       password: "1234",
-//                       email: "unknow@gmail.com",
-//                       isCreator: false,
-//                       isVerified: true,
-//                       verifyCode: "",
-//                       codeExpireTime: 1234,
-//                     );

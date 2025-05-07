@@ -101,7 +101,7 @@ class ReelsService {
   }) async {
     try {
       final response = await http.post(
-        Uri.parse("${baseUrl}/like-videos"),
+        Uri.parse("$baseUrl/like-videos"),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({"userId": userId, "reelId": reelId}),
       );
@@ -124,7 +124,7 @@ class ReelsService {
   }) async {
     try {
       final response = await http.post(
-        Uri.parse("${baseUrl}/dislike-videos"),
+        Uri.parse("$baseUrl/dislike-videos"),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({"userId": userId, "reelId": reelId}),
       );
