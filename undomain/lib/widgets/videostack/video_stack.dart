@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:undomain/models/reel/reel_model.dart';
 import 'package:undomain/provider/reel_provider.dart';
 import 'package:undomain/util/colors/colors.dart';
+import 'package:undomain/util/textstyles/text_styles.dart';
+import 'package:undomain/widgets/bottom_sheet_widget/bottom_sheet_widget.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
@@ -220,6 +222,16 @@ class _VideoStackState extends ConsumerState<VideoStack>
         .toggledisLike(reelId: widget.reel.reelId, userId: widget.userId);
   }
 
+  //open bottom sheet widget
+  Future<void> _openBoottomSheet() {
+    return showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return BottomSheetWidget(reel: widget.reel, userid: widget.userId);
+      },
+    );
+  }
+
   //dispose video player
   @override
   void dispose() {
@@ -320,7 +332,32 @@ class _VideoStackState extends ConsumerState<VideoStack>
                   ),
                 ),
                 SizedBox(height: 20),
-                Icon(Icons.comment_outlined, color: utilPrimaryWhite, size: 28),
+                GestureDetector(
+                  onTap: () async {
+                    await _openBoottomSheet();
+                  },
+                  child: Icon(
+                    Icons.comment_outlined,
+                    color: utilPrimaryWhite,
+                    size: 28,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          //title and tags
+          Positioned(
+            left: 15,
+            top: MediaQuery.of(context).size.height * 0.85,
+            child: Column(
+              children: [
+                Text(
+                  widget.reel.title,
+                  style: textHint.copyWith(color: utilPrimaryWhite),
+                ),
+                if (widget.reel.tags.isNotEmpty)
+                  for (String tag in widget.reel.tags)
+                    Flexible(child: Text(tag, style: textLabel)),
               ],
             ),
           ),

@@ -1,166 +1,312 @@
-import 'dart:io';
+import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:undomain/pages/admob/native_ad.dart';
+import 'package:undomain/models/user/user_model.dart';
+import 'package:undomain/provider/user_provider.dart';
 import 'package:undomain/router/router_names.dart';
 import 'package:undomain/services/auth_services/authservices.dart';
-import 'package:undomain/services/reelservice/reelservices.dart';
+import 'package:undomain/services/userservices/userservices.dart';
 import 'package:undomain/util/colors/colors.dart';
 import 'package:undomain/util/global/global_function.dart';
 import 'package:undomain/util/global/global_varibles.dart';
 import 'package:undomain/util/textstyles/text_styles.dart';
-import 'package:undomain/widgets/textboxes/authtext_box.dart';
 
 class ProfileScren extends ConsumerStatefulWidget {
-  final String userId;
-  const ProfileScren({super.key, required this.userId});
+  final UserModel user;
+  const ProfileScren({super.key, required this.user});
 
   @override
   ConsumerState<ProfileScren> createState() => _ProfileScrenState();
 }
 
 class _ProfileScrenState extends ConsumerState<ProfileScren> {
-  final ReelsService _reelsService = ReelsService();
-  bool isLoading = false;
-  File? _videofile;
-  final TextEditingController _titlecontroller = TextEditingController();
+  // final ReelsService _reelsService = ReelsService();
+
+  // File? _videofile;
+  // final TextEditingController _titlecontroller = TextEditingController();
   final GlobalFunction _globalFunction = GlobalFunction();
-  Future<void> _pickVideo() async {
-    final _picker = ImagePicker();
-    final video = await _picker.pickVideo(source: ImageSource.gallery);
-    if (video != null) {
-      setState(() {
-        _videofile = File(video.path);
-      });
-    }
-  }
-
-  Future<void> _uploadVideo() async {
-    setState(() {
-      isLoading = true;
-    });
-    final response = await _reelsService.uploadVideo(
-      userId: widget.userId,
-      videoFile: _videofile!,
-      title: _titlecontroller.text,
-    );
-    if (!response["success"]) {
-      print(response);
-      _globalFunction.snackBarMassage(context, response["message"], 3);
-    } else {
-      _globalFunction.snackBarMassage(context, "video uploaded", 3);
-    }
-
-    setState(() {
-      isLoading = false;
-      _titlecontroller.clear();
-      _videofile = null;
-    });
-  }
-
+  final Userservices _userservices = Userservices();
+  bool _hasShownError = false;
+  bool isLoading = false;
+  Uint8List? imagebytes;
+  bool _isfollowing = false;
   void _logout(WidgetRef ref) {
     Authservices().logout(ref);
     GoRouter.of(context).goNamed(RouterNames.loginPage);
   }
 
+  //follow user
+  Future<void> _followUser() async {
+    final result = await _userservices.followUnfollowUser(
+      guestid: widget.user.id,
+    );
+    if (!result["success"]) {
+      _globalFunction.snackBarMassage(context, result["massage"], 3);
+      return;
+    }
+    _globalFunction.snackBarMassage(context, result["massage"], 3);
+    setState(() {
+      _isfollowing = !_isfollowing;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   void dispose() {
-    _titlecontroller.dispose();
+    //_titlecontroller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final currentUserData = ref.watch(currentUserProvider);
+    double deviceW = MediaQuery.of(context).size.width;
+    double deviceH = MediaQuery.of(context).size.height;
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: mainPagePaddingH,
-          vertical: mainPagePaddingV,
-        ),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+      body: currentUserData.when(
+        error:
+            (error, stackTrace) =>
+                Center(child: Text('Error: ${error.toString()}')),
+        loading:
+            () =>
+                Center(child: CircularProgressIndicator(color: utilPrimaryRed)),
+        data: (currentuser) {
+          if ((!currentuser["success"] && !_hasShownError) ||
+              currentuser["user"] == null) {
+            _hasShownError = true;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _globalFunction.snackBarMassage(
+                context,
+                currentuser["massage"],
+                3,
+              );
+            });
+          }
+          if (currentuser["user"] == null) {
+            Center(child: CircularProgressIndicator(color: utilPrimaryRed));
+          }
+          UserModel current = currentuser["user"];
+          String base64String = widget.user.profileUrl;
+          imagebytes = base64Decode(base64String);
+          _isfollowing = widget.user.followers!.contains(current.id) ?? false;
+          return Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: mainPagePaddingH,
+              vertical: mainPagePaddingV,
+            ),
+            child: Column(
               children: [
-                TextButton(
-                  onPressed: () {
-                    _logout(ref);
-                  },
-                  child: Text("Logout", style: textBody),
+                //logout
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        _logout(ref);
+                      },
+                      child: Text("Logout", style: textBody),
+                    ),
+                    SizedBox(height: 8),
+                  ],
                 ),
+                //profile image
+                imagebytes == null
+                    ? Center(
+                      child: CircleAvatar(
+                        backgroundColor: utilPrimaryGrey,
+                        radius: 24,
+                      ),
+                    )
+                    : Center(
+                      child: CircleAvatar(
+                        backgroundColor: utilPrimaryGrey,
+                        radius: 60,
+                        backgroundImage: MemoryImage(imagebytes!),
+                      ),
+                    ),
+                SizedBox(height: 8),
+                //name
+                Center(
+                  child: Text(
+                    "@${widget.user.username}",
+                    style: textTitalSmall,
+                  ),
+                ),
+                SizedBox(height: 16),
+                //follow and followings
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    //following
+                    Column(
+                      children: [
+                        Text(
+                          widget.user.following!.length.toString() ?? "0",
+                          style: textBody,
+                        ),
+                        Text("Following", style: textBody),
+                      ],
+                    ),
+                    //followers
+                    Column(
+                      children: [
+                        Text(
+                          widget.user.followers!.length.toString() ?? "0",
+                          style: textBody,
+                        ),
+                        Text("Followers", style: textBody),
+                      ],
+                    ),
+                  ],
+                ),
+                SizedBox(height: 8),
+                //option list
+                widget.user.id == current.id
+                    ? Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        //edit profile
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: mainPagePaddingH,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: utilPrimaryRed,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            "Edit profile",
+                            style: textTitalSmall.copyWith(
+                              color: utilPrimaryWhite,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 4),
+                        //register as worker
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: mainPagePaddingH,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: utilPrimaryRed,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            "Worker?",
+                            style: textTitalSmall.copyWith(
+                              color: utilPrimaryWhite,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 4),
+                        //add new followings
+                        Container(
+                          padding: EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: utilPrimaryRed,
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
+                            Icons.add_reaction_outlined,
+                            size: 28,
+                            color: utilPrimaryWhite,
+                          ),
+                        ),
+                      ],
+                    )
+                    : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        //follow user
+                        GestureDetector(
+                          onTap: () async {
+                            await _followUser();
+                          },
+                          child:
+                              _isfollowing
+                                  ? Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: mainPagePaddingH,
+                                      vertical: 8,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: utilPrimaryGrey,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      "Unfollow",
+                                      style: textTitalSmall.copyWith(
+                                        color: utilPrimaryWhite,
+                                      ),
+                                    ),
+                                  )
+                                  : Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: mainPagePaddingH,
+                                      vertical: 8,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: utilPrimaryRed,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      "Follow",
+                                      style: textTitalSmall.copyWith(
+                                        color: utilPrimaryWhite,
+                                      ),
+                                    ),
+                                  ),
+                        ),
+                        SizedBox(width: 4),
+                        //massage user
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: mainPagePaddingH,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: utilPrimaryRed,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            "Massage",
+                            style: textTitalSmall.copyWith(
+                              color: utilPrimaryWhite,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 4),
+                        //add new followings
+                        Container(
+                          padding: EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: utilPrimaryRed,
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
+                            Icons.add_reaction_outlined,
+                            size: 28,
+                            color: utilPrimaryWhite,
+                          ),
+                        ),
+                      ],
+                    ),
+                //if worker show the reels
               ],
             ),
-            GestureDetector(
-              onTap: () async {
-                await _pickVideo();
-              },
-              child:
-                  _videofile != null
-                      ? Text(_videofile!.path, style: textLabel)
-                      : Container(
-                        width: 34,
-                        height: 34,
-
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: utilPrimaryWhite,
-                        ),
-                        child: Center(
-                          child: Icon(
-                            Icons.add,
-                            size: 28,
-                            color: utilPrimaryBlack,
-                          ),
-                        ),
-                      ),
-            ),
-            SizedBox(height: 10),
-            AuthtextBox(
-              onSubmit: (p0) {},
-              controller: _titlecontroller,
-              hint: "title",
-              isShow: false,
-              textInputAction: TextInputAction.done,
-              textInputType: TextInputType.text,
-              isValid: true,
-              validChecker: (value) => null,
-            ),
-            SizedBox(height: 10),
-            GestureDetector(
-              onTap: () async {
-                await _uploadVideo();
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: mainPagePaddingH,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: utilPrimaryRed,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child:
-                    isLoading
-                        ? Center(
-                          child: CircularProgressIndicator(
-                            color: utilPrimaryWhite,
-                          ),
-                        )
-                        : Text(
-                          "Upload Video",
-                          style: textTitalSmall.copyWith(
-                            color: utilPrimaryWhite,
-                          ),
-                        ),
-              ),
-            ),
-            SizedBox(height: 50),
-            NativeAdWidget(),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

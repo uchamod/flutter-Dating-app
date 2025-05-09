@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:undomain/models/user/user_model.dart';
 import 'package:undomain/pages/authentication/email_verification/email_verification.dart';
 import 'package:undomain/pages/authentication/fogotpassword/fogot_password.dart';
 import 'package:undomain/pages/authentication/login/login_screen.dart';
@@ -16,6 +17,7 @@ import 'package:undomain/pages/reels/reel_screen.dart';
 import 'package:undomain/pages/streaming/live_screen.dart';
 import 'package:undomain/pages/streaming/log_streaming.dart';
 import 'package:undomain/pages/streaming/streaming_screen.dart';
+import 'package:undomain/pages/update/update_screen.dart';
 import 'package:undomain/router/router_names.dart';
 
 class Routes {
@@ -147,6 +149,7 @@ class Routes {
           return StreamingScreen();
         },
       ),
+      //reel page
       GoRoute(
         path: "/reel",
         name: RouterNames.reelPage,
@@ -155,12 +158,22 @@ class Routes {
           return ReelScreen(userId: userId);
         },
       ),
+      //profile page
       GoRoute(
         path: "/profile",
         name: RouterNames.profilePage,
         builder: (context, state) {
+          UserModel user = (state.extra as Map<String, dynamic>)["user"];
+          return ProfileScren(user: user);
+        },
+      ),
+      //updatepage
+      GoRoute(
+        path: "/update",
+        name: RouterNames.updatePage,
+        builder: (context, state) {
           String userId = (state.extra as Map<String, dynamic>)["userId"];
-          return ProfileScren(userId: userId);
+          return UpdateScreen(userId: userId);
         },
       ),
     ],

@@ -13,4 +13,5 @@ class RouterNames {
   static const String mainStremaingPage = "/livestream";
   static const String reelPage = "/reel";
   static const String profilePage = "/profile";
+  static const String updatePage = "/update";
 }

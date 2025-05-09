@@ -68,6 +68,9 @@ class Userservices {
       List<dynamic> users = allUsersMap["users"];
       List<UserModel> allUsers =
           users.map((item) => UserModel.fromJson(item)).toList();
+      List<UserModel> allUsers2 =
+          users.map((item) => UserModel.fromJson(item)).toList();
+      allUsers = [...allUsers, ...allUsers2];
       return {"success": true, "users": allUsers};
     } catch (err) {
       print("client side error $err");
@@ -104,6 +107,30 @@ class Userservices {
     } catch (err) {
       print("client side error $err");
       return {"success": false, "massage": "Unexpected error"};
+    }
+  }
+
+  //follow unfollow user
+  Future<Map<String, dynamic>> followUnfollowUser({
+    required String guestid,
+  }) async {
+    try {
+      final token = await getToken();
+      if (token == null) {
+        return {"success": false, "massage": "Authenticated token not found"};
+      }
+      final response = await http.post(
+        Uri.parse("$baseUrl/followuser/$guestid"),
+        headers: {'Content-Type': 'application/json', 'Authorization': token},
+      );
+      final result = json.decode(response.body);
+      if (response.statusCode != 200) {
+        return result;
+      }
+      return result;
+    } catch (err) {
+      print("error while following user $err");
+      return {"success": false, "massage": "client side error"};
     }
   }
 }

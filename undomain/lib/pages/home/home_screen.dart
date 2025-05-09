@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,6 +13,7 @@ import 'package:undomain/services/userservices/userservices.dart';
 import 'package:undomain/util/colors/colors.dart';
 import 'package:undomain/util/global/global_function.dart';
 import 'package:undomain/util/textstyles/text_styles.dart';
+import 'package:undomain/widgets/loading_indicator/plain_indicator.dart';
 import 'package:undomain/widgets/userListviwe/user_listviwe.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -31,7 +33,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Uint8List? imagebytes;
   String username = "";
   List<UserModel> searchedUsers = [];
-
+  final _indicatorController = IndicatorController();
   Future<void> _searchUser(String query) async {
     if (query.isEmpty) {
       return;
@@ -47,6 +49,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         searchedUsers = response["users"];
       });
     }
+  }
+
+  // Add refresh method to reload user data
+  Future<void> _handleRefresh() async {
+    // Invalidate the provider to force a refresh
+    ref.invalidate(currentUserProvider);
+
+    // Clear search results
+    setState(() {
+      searchedUsers = [];
+    });
+
+    // Wait for a moment to simulate network request
+    await Future.delayed(const Duration(milliseconds: 1500));
   }
 
   bool _hasShownError = false;
@@ -85,77 +101,84 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             UserModel user = currentuser["user"];
             String base64String = user.profileUrl;
             imagebytes = base64Decode(base64String);
-            return Column(
-              children: [
-                Container(
-                  width: double.infinity,
-                  height: deviceH * 0.4,
-                  child: Stack(
-                    //fit: StackFit.expand,
-                    children: [
-                      //background image
-                      Image.asset(
-                        "assets/mess.jpeg",
-                        fit: BoxFit.fill,
-                        height: deviceH * 0.4,
-                        width: double.infinity,
-                      ),
-                      //user name
-                      Positioned(
-                        top: deviceH * 0.03,
-                        left: deviceW * 0.03,
-                        child: Chip(
-                          label: RichText(
-                            text: TextSpan(
-                              children: [
-                                TextSpan(text: "Welcome ", style: textLabelRed),
-                                TextSpan(
-                                  text: user.username ?? username,
-                                  style: textLabel,
-                                ),
-                              ],
+            return PlaneIndicator(
+              controller: _indicatorController,
+              handleRefresh: _handleRefresh,
+              child: Column(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    height: deviceH * 0.4,
+                    child: Stack(
+                      //fit: StackFit.expand,
+                      children: [
+                        //background image
+                        Image.asset(
+                          "assets/mess.jpeg",
+                          fit: BoxFit.fill,
+                          height: deviceH * 0.4,
+                          width: double.infinity,
+                        ),
+                        //user name
+                        Positioned(
+                          top: deviceH * 0.03,
+                          left: deviceW * 0.03,
+                          child: Chip(
+                            label: RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: "Welcome ",
+                                    style: textLabelRed,
+                                  ),
+                                  TextSpan(
+                                    text: user.username ?? username,
+                                    style: textLabel,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            autofocus: true,
+                            backgroundColor: utilPrimaryWhite,
+                            labelPadding: EdgeInsets.all(2),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(24),
                             ),
                           ),
-                          autofocus: true,
-                          backgroundColor: utilPrimaryWhite,
-                          labelPadding: EdgeInsets.all(2),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(24),
+                        ),
+
+                        //uaer profile  picture
+                        Positioned(
+                          top: deviceH * 0.03,
+                          right: deviceW * 0.03,
+                          child:
+                              imagebytes == null
+                                  ? CircleAvatar(
+                                    backgroundColor: utilPrimaryGrey,
+                                    radius: 24,
+                                  )
+                                  : CircleAvatar(
+                                    backgroundColor: utilPrimaryGrey,
+                                    radius: 24,
+                                    backgroundImage: MemoryImage(imagebytes!),
+                                  ),
+                        ),
+                        //search bar
+                        Positioned(
+                          child: Padding(
+                            padding: EdgeInsets.only(top: deviceH * 0.3),
+                            child: searchBar(context),
                           ),
                         ),
-                      ),
-
-                      //uaer profile  picture
-                      Positioned(
-                        top: deviceH * 0.03,
-                        right: deviceW * 0.03,
-                        child:
-                            imagebytes == null
-                                ? CircleAvatar(
-                                  backgroundColor: utilPrimaryGrey,
-                                  radius: 24,
-                                )
-                                : CircleAvatar(
-                                  backgroundColor: utilPrimaryGrey,
-                                  radius: 24,
-                                  backgroundImage: MemoryImage(imagebytes!),
-                                ),
-                      ),
-                      //search bar
-                      Positioned(
-                        child: Padding(
-                          padding: EdgeInsets.only(top: deviceH * 0.3),
-                          child: searchBar(context),
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-               // SizedBox(height: 16),
+                  // SizedBox(height: 16),
                   BannerAdWidget(),
-                //show all users(will avalible workers)
-                Expanded(child: UserListviwe(searchUsers: searchedUsers)),
-              ],
+                  //show all users(will avalible workers)
+                  Expanded(child: UserListviwe(searchUsers: searchedUsers)),
+                ],
+              ),
             );
           },
         ),
