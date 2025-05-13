@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.undomain"
-    compileSdk = 35
+    compileSdk = 34
     ndkVersion = flutter.ndkVersion
 
 
@@ -25,7 +25,7 @@ android {
         applicationId = "com.example.undomain"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = 22
+        minSdk = 23
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -36,6 +36,9 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
+
+            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+
         }
     }
 }
@@ -43,3 +46,6 @@ android {
 flutter {
     source = "../.."
 }
+// dependencies {
+//   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+// }

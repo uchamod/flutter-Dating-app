@@ -2,24 +2,29 @@ class ReelModel {
   final String reelId;
   final String title;
   final List tags;
-  final String discription;
-
+  final String url;
+  final List likes;
+  final List disLikes;
+  final List<Map<String, String>> comments;
+  final bool processed;
   final String userId;
-  final List<String>? favourite;
-  final List<String>? dislike;
-  final DateTime publishedDate;
-  final String? weblink;
 
+  final String? weblink;
+  final DateTime joinedDate;
+  final DateTime updatedDate;
   ReelModel({
     required this.reelId,
     required this.title,
     required this.tags,
-    required this.discription,
+    required this.url,
     required this.userId,
-    required this.favourite,
-    required this.dislike,
-    required this.publishedDate,
+    required this.likes,
+    required this.disLikes,
+    required this.comments,
+    required this.processed,
     required this.weblink,
+    required this.joinedDate,
+    required this.updatedDate,
   });
 
   Map<String, dynamic> toJson() {
@@ -27,13 +32,15 @@ class ReelModel {
       "reelId": reelId,
       "title": title,
       "tags": tags,
-      "discription": discription,
-
+      "url": url,
+      "comments": comments,
       "userId": userId,
-      "favourite": favourite,
-      "dislike": dislike,
-      "publishedDate": publishedDate,
+      "like": likes,
+      "dislikes": disLikes,
+      "processed": processed,
       "weblink": weblink,
+      "joinedDate": joinedDate,
+      "updatedDate": updatedDate,
     };
   }
 
@@ -41,15 +48,17 @@ class ReelModel {
   factory ReelModel.fromJson(Map<String, dynamic> json) {
     return ReelModel(
       reelId: json["reelId"],
-      title: json["title"],
-      tags: json["tags"],
-      discription: json["discription"],
-
       userId: json["userId"],
-      favourite: json["favourite"],
-      dislike: json["dislike"],
-      publishedDate: json["publishedDate"],
-      weblink: json["weblink"],
+      title: json["title"],
+      url: json["url"],
+      joinedDate: DateTime.parse(json["joinedDate"]),
+      updatedDate: DateTime.parse(json["updatedDate"]),
+      weblink: json["weblink"] ?? "google",
+      processed: json["processed"],
+      likes: json["likes"] ?? [],
+      disLikes: json["disLikes"] ?? [],
+      comments: List<Map<String, String>>.from(json["comments"]) ?? [],
+      tags: json["tags"] ?? [],
     );
   }
 }

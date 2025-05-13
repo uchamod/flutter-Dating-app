@@ -1,0 +1,139 @@
+import 'dart:math' as math;
+
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:undomain/router/router_names.dart';
+import 'package:undomain/services/admob_service/interstitial_ad.dart';
+import 'package:undomain/util/colors/colors.dart';
+import 'package:undomain/util/global/global_varibles.dart';
+import 'package:undomain/util/textstyles/text_styles.dart';
+import 'package:undomain/widgets/buttons/icon_button.dart';
+import 'package:undomain/widgets/expansionTitle/expansion_title.dart';
+import 'package:undomain/widgets/textboxes/authtext_box.dart';
+
+class LogStreaming extends StatefulWidget {
+  const LogStreaming({super.key});
+
+  @override
+  State<LogStreaming> createState() => _LogStreamingState();
+}
+
+class _LogStreamingState extends State<LogStreaming> {
+  final TextEditingController _controller = TextEditingController();
+
+  String? selectedOption = "Comments";
+  //additional settings
+  final List<String> options = [
+    "Comments",
+    "Distribution setting",
+    "Streaming filters",
+    "History",
+  ];
+  //nav to streaming page
+  void _gotoLivePage(
+    BuildContext context, {
+    required bool isHost,
+    required String liveId,
+  }) {
+    GoRouter.of(context).goNamed(
+      RouterNames.zegoLiveScreen,
+      extra: {"isHost": isHost, "liveId": liveId},
+    );
+  }
+
+  @override
+  void initState() {
+    InterstitialAdService().showInterstitialAd();
+    super.initState();
+  }
+
+  final String localUserID = math.Random().nextInt(10000).toString();
+  @override
+  Widget build(BuildContext context) {
+    final deviceHeight = MediaQuery.of(context).size.height;
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            GoRouter.of(context).goNamed(
+              RouterNames.mainpage,
+              extra: {"isFromLogin": false, "index": 2, "userId": ""},
+            );
+          },
+          icon: Icon(Icons.arrow_back_outlined),
+          iconSize: 24,
+          color: utilPrimaryBlack,
+        ),
+      ),
+      body: SingleChildScrollView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: mainPagePaddingH,
+            vertical: mainPagePaddingV,
+          ),
+          child: Column(
+            children: [
+              Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "Enter your liveID to start new streaming or you can join existing one adding shared liveID.",
+                  style: textHint.copyWith(fontSize: 12),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(text: "Live_ID:", style: textLabelRed),
+                    TextSpan(text: localUserID, style: textLabel),
+                  ],
+                ),
+              ),
+              SizedBox(height: deviceHeight * 0.035),
+              AuthtextBox(
+                onSubmit: (p0) {},
+                controller: _controller,
+                hint: "Enter Live ID",
+                isShow: false,
+                textInputAction: TextInputAction.done,
+                textInputType: TextInputType.number,
+                isValid: true,
+              ),
+              SizedBox(height: deviceHeight * 0.02),
+              //go live button
+              GestureDetector(
+                onTap: () {
+                  // Prevent multiple instances when minimized
+
+                  _gotoLivePage(
+                    context,
+                    isHost:
+                        _controller.text.trim() == localUserID ? true : false,
+                    liveId: _controller.text.trim(),
+                  );
+                },
+                child: IconTextButton(),
+              ),
+              //free space
+              SizedBox(height: deviceHeight * 0.15),
+              //addtionl setting drop down
+              Align(
+                alignment: Alignment.topLeft,
+                child: Text(
+                  "additinal setting",
+                  style: textLabelRed,
+                  textAlign: TextAlign.left,
+                ),
+              ),
+              ExpansionTitleWidget(title: "Comments"),
+              ExpansionTitleWidget(title: "Distribution setting"),
+              ExpansionTitleWidget(title: "Streaming filters"),
+              ExpansionTitleWidget(title: "History"),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

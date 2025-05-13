@@ -38,3 +38,8 @@ final textTitalSmall = GoogleFonts.poppins(
   fontSize: 16,
   fontWeight: FontWeight.w600,
 );
+final textSnackbar = GoogleFonts.poppins(
+  color: utilPrimaryWhite,
+  fontSize: 11,
+  fontWeight: FontWeight.w400,
+);
