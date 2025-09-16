@@ -9,6 +9,8 @@ class AuthtextBox extends StatelessWidget {
   final bool isShow;
   final TextInputAction textInputAction;
   final TextInputType textInputType;
+  final String? Function(String?)? validChecker;
+  final bool isValid;
   const AuthtextBox({
     super.key,
     required this.onSubmit,
@@ -17,20 +19,24 @@ class AuthtextBox extends StatelessWidget {
     required this.isShow,
     required this.textInputAction,
     required this.textInputType,
+    this.validChecker,
+    required this.isValid,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       onFieldSubmitted: onSubmit,
+      validator: validChecker,
       controller: controller,
       textInputAction: textInputAction,
       keyboardType: textInputType,
       obscureText: isShow,
       cursorColor: utilPrimaryGrey,
+      
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: textHint,
+        hintStyle: isValid ? textHint : textLabelRed,
 
         contentPadding: EdgeInsets.symmetric(
           vertical: MediaQuery.of(context).size.height * 0.02,

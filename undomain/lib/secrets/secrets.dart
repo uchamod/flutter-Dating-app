@@ -1,0 +1,5 @@
+class Secrets {
+  int ZEGO_APPID = 28439340;
+  String ZEGO_APPSING =
+      "fa42963266224d38a78401e3266172c17468fdf478797b1d5cda2aadc52ff90d";
+}
