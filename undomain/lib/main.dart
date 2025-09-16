@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:undomain/pages/restart/restart.dart';
 import 'package:undomain/router/go_router.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(RestartWidget(child: ProviderScope(child: const MyApp())));
 }
 
 class MyApp extends StatelessWidget {

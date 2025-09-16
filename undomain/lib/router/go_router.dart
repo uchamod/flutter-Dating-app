@@ -3,17 +3,19 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:undomain/pages/authentication/email_verification/email_verification.dart';
+import 'package:undomain/pages/authentication/fogotpassword/fogot_password.dart';
 import 'package:undomain/pages/authentication/login/login_screen.dart';
 import 'package:undomain/pages/authentication/register/register_screen.dart';
 import 'package:undomain/pages/authentication/spalshscreen/spalsh.dart';
 import 'package:undomain/pages/authentication/terms&conditions/terms_and_conditions.dart';
 import 'package:undomain/pages/error/error_page.dart';
-import 'package:undomain/pages/home/homepage.dart';
+import 'package:undomain/pages/home/home_screen.dart';
+import 'package:undomain/pages/home/main_screen.dart';
 import 'package:undomain/router/router_names.dart';
 
 class Routes {
   final goRouter = GoRouter(
-    initialLocation: "/verify",
+    initialLocation: "/",
     errorPageBuilder: (context, state) {
       return const MaterialPage(child: ErrorPage());
     },
@@ -42,7 +44,7 @@ class Routes {
           return const TermsAndConditions();
         },
       ),
-      // //registerpage
+      //registerpage
       GoRoute(
         path: "/register",
         name: RouterNames.registerPage,
@@ -55,7 +57,15 @@ class Routes {
         path: "/verify",
         name: RouterNames.verificationPage,
         builder: (context, state) {
-          return EmailVerification();
+          final String userId = (state.extra as Map<String, dynamic>)["userId"];
+          final bool isFromRegister =
+              (state.extra as Map<String, dynamic>)["isFromRegister"];
+          final String email = (state.extra as Map<String, dynamic>)["email"];
+          return EmailVerification(
+            userid: userId,
+            isForRegister: isFromRegister,
+            email: email,
+          );
         },
       ),
       //Homepage
@@ -63,7 +73,43 @@ class Routes {
         path: "/home",
         name: RouterNames.homePage,
         builder: (context, state) {
-          return Homepage();
+          bool isRestarted = (state.extra as Map<String, dynamic>)["start"];
+          // String username = (state.extra as Map<String, dynamic>)["username"];
+          // String email = (state.extra as Map<String, dynamic>)["email"];
+          // Uint8List profileUrl =
+          //     (state.extra as Map<String, dynamic>)["profileUrl"];
+          return HomeScreen(
+            isRestart: isRestarted,
+            // prfileUrl: profileUrl,
+            // userId: userId,
+            // username: username,
+          );
+        },
+      ),
+      //Homepage
+      GoRoute(
+        path: "/fogotpassword",
+        name: RouterNames.fogotpasswordScreen,
+        builder: (context, state) {
+          return FogotPassword();
+        },
+      ),
+      GoRoute(
+        path: "/wrapper",
+        name: RouterNames.wrapperScreen,
+        builder: (context, state) {
+          return WrapperScreen();
+        },
+      ),
+      //main screen
+      GoRoute(
+        path: "/main",
+        name: RouterNames.mainpage,
+        builder: (context, state) {
+          bool isFromLogin = (state.extra as Map<String, dynamic>)["isFromLogin"];
+          return Homepage(
+            isFromLogin: isFromLogin,
+          );
         },
       ),
     ],
